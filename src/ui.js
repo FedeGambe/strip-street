@@ -85,7 +85,13 @@ function buildBoard() {
   document.body.append(tip);
   const open = (e) => { const cell = e.target.closest?.(".cell"); if (cell && (tip.dataset.at !== cell.id || !tip.classList.contains("on"))) showTip(cell); };
   board.addEventListener('pointerover', open);
-  board.addEventListener('focusin', open);
+  // da tastiera si apre col focus; col mouse il clic lascia il focus sulla casella, quindi qui solo :focus-visible
+  board.addEventListener('focusin', (e) => { if (e.target.matches?.('.cell:focus-visible')) open(e); });
+  // si chiude appena il puntatore esce dalla casella (anche verso il centro del tabellone)
+  board.addEventListener('pointerout', (e) => {
+    const cell = e.target.closest?.('.cell');
+    if (cell && !cell.contains(e.relatedTarget) && tip.dataset.at === cell.id) hideTip();
+  });
   board.addEventListener('pointerleave', hideTip);
   board.addEventListener('focusout', hideTip);
   addEventListener('scroll', hideTip, true);

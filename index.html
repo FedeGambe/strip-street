@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="/src/style.css">
 </head>
 <body>
+  <div id="setup-bg" aria-hidden="true"></div>
   <form id="setup" hidden>
     <div class="lid"><h1 class="brand-sign" id="brand-sign"><span class="sr-only">Strip Street</span></h1></div>
     <div class="setup-body">
@@ -27,7 +28,7 @@
   </form>
 
   <header id="bar" hidden>
-    <button type="button" class="tab" id="bar-tab" aria-expanded="false" aria-controls="bar">Menu ▾</button>
+    <button type="button" class="tab" id="bar-tab" aria-expanded="false" aria-controls="bar">Mostra ▾</button>
     <h1 class="brand-word" id="brand-word"><span class="sr-only">Strip Street</span></h1>
     <div class="row">
       <button id="open-settings" class="small">Impostazioni</button>
@@ -76,7 +77,7 @@
           <summary>Regole manuali</summary>
           <div id="manual"></div>
         </details>
-        <details class="box panel log" open>
+        <details class="panel log" open>
           <summary>Cronaca</summary>
           <ol id="log"></ol>
         </details>

@@ -19,8 +19,10 @@
   --felt: #CDE9D4;
   --table: var(--velvet);
   --stroke: 2px solid var(--ink);
-  --hard: 4px 4px 0 var(--ink);
-  --hard-sm: 2px 2px 0 var(--ink);
+  /* ombre morbide: sfumate, leggermente verso il basso */
+  --hard: 0 6px 16px rgba(26, 15, 23, .16), 0 2px 4px rgba(26, 15, 23, .1);
+  --hard-sm: 0 2px 6px rgba(26, 15, 23, .16);
+  --lift: 0 12px 28px rgba(26, 15, 23, .24), 0 3px 6px rgba(26, 15, 23, .12);
   --radius: 12px;
   --pop: cubic-bezier(.3, 1.5, .5, 1);
   --font: 'Inter', system-ui, sans-serif;
@@ -99,12 +101,14 @@ button {
   background: var(--paper);
   border-radius: 10px;
   padding: .55rem 1.2rem;
-  font-weight: 600;
-  box-shadow: 3px 3px 0 var(--ink);
+  font-family: var(--display); /* Lilita One: c'è un solo peso, niente grassetto finto */
+  font-weight: 400;
+  letter-spacing: .02em;
+  box-shadow: var(--hard-sm);
   transition: transform .1s, box-shadow .1s, background .2s;
 }
-button:hover:not(:disabled) { background: #fff; transform: translate(-1px, -1px); box-shadow: 4px 4px 0 var(--ink); }
-button:active:not(:disabled) { transform: translate(3px, 3px); box-shadow: 0 0 0 var(--ink); }
+button:hover:not(:disabled) { background: #fff; transform: translateY(-1px); box-shadow: var(--hard); }
+button:active:not(:disabled) { transform: translateY(1px); box-shadow: 0 1px 2px rgba(26, 15, 23, .2); }
 button:disabled { opacity: .4; cursor: not-allowed; }
 button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible { outline: 3px solid var(--blu); outline-offset: 2px; }
 button.primary { background: var(--rose-deep); color: #fff; }
@@ -115,14 +119,28 @@ button.danger { background: #FFE1DA; }
 .row { display: flex; gap: .5rem; flex-wrap: wrap; }
 
 /* Setup: la scatola del gioco. Coperchio bordeaux con l'insegna, fascia dei colori, cartoncino crema. */
-body:has(#setup:not([hidden])) { overflow: auto; }
+body:has(#setup:not([hidden])) { display: grid; place-items: center; height: 100dvh; } /* niente scroll: box al centro */
+body:has(#setup[hidden]) #setup-bg { display: none; }
+#setup-bg {
+  position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none;
+  background: radial-gradient(ellipse at 50% 30%, rgba(224, 68, 110, .28), transparent 60%),
+    radial-gradient(ellipse at 15% 90%, rgba(63, 184, 175, .18), transparent 50%);
+}
+#setup-bg > * { position: absolute; translate: -50% -50%; rotate: var(--r); }
+.bg-mark { opacity: .16; animation: float 7s ease-in-out var(--d) infinite alternate; }
+.bg-star svg { display: block; fill: var(--gold); animation: sparkle 3s ease-in-out var(--d) infinite; }
+.bg-logo { left: auto !important; top: auto !important; right: 1.2rem; bottom: 1.2rem; translate: none !important; rotate: -6deg !important;
+  width: clamp(110px, 16vw, 200px); filter: drop-shadow(0 8px 16px rgba(0, 0, 0, .4)); }
+@keyframes float { to { transform: translateY(-14px); } }
+@keyframes sparkle { 0%, 100% { opacity: .15; transform: scale(.6); } 50% { opacity: .9; transform: scale(1); } }
+@media (prefers-reduced-motion: reduce) { #setup-bg * { animation: none !important; } }
 #setup {
   width: min(500px, 92vw);
-  margin: 2vh auto;
+  margin: 0;
   background: var(--paper);
   border: 3px solid var(--ink);
   border-radius: 18px;
-  box-shadow: 10px 10px 0 var(--ink);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, .45), 0 6px 14px rgba(0, 0, 0, .25);
   animation: rise .6s ease-out;
 }
 #setup .lid {
@@ -162,7 +180,7 @@ body:has(#setup:not([hidden])) { overflow: auto; }
   background: linear-gradient(90deg, var(--pc) 0 10px, color-mix(in srgb, var(--pc) 10%, var(--paper)) 10px);
   box-shadow: var(--hard);
 }
-.field .pawn { width: 24px; flex-shrink: 0; filter: drop-shadow(2px 2px 0 rgba(26, 15, 23, .5)); }
+.field .pawn { width: 24px; flex-shrink: 0; filter: drop-shadow(0 2px 2px rgba(26, 15, 23, .35)); }
 .field .pawn svg { display: block; width: 100%; fill: var(--pc); }
 .field input { background: #fff; color: var(--ink); border: var(--stroke); border-radius: 8px; padding: .45rem .7rem; }
 .field input[name^="p"] { flex: 1; width: 0; min-width: 0; font-weight: 600; }
@@ -186,8 +204,7 @@ body:has(#setup:not([hidden])) { overflow: auto; }
   justify-content: space-between;
   padding: 0 16px;
   border-bottom: var(--stroke);
-  background: var(--paper);
-  box-shadow: 0 4px 0 var(--ink);
+  background: var(--velvet);
   transform: translateY(-100%);
   transition: transform .25s ease;
 }
@@ -196,18 +213,19 @@ body:has(#setup:not([hidden])) { overflow: auto; }
   position: absolute;
   top: 100%;
   left: calc(12px + 7vw); /* metà destra dell'angolo Zona Franca, accanto al martini */
-  translate: 0 2px;
+  /* top: 100% = sopra il bordo inferiore della barra: la linguetta lo copre e resta attaccata */
   padding: .15rem .9rem .3rem;
   font: 400 .8rem var(--display);
   letter-spacing: .1em;
   text-transform: uppercase;
-  background: var(--paper);
+  color: var(--cream);
+  background: var(--velvet);
   border: var(--stroke);
   border-top: 0;
   border-radius: 0 0 10px 10px;
-  box-shadow: var(--hard-sm);
+  box-shadow: none;
 }
-#bar .tab:hover { transform: none; background: #fff; }
+#bar .tab:hover { transform: none; background: #6A1F45; box-shadow: none; }
 #bar .tab:active { transform: none; }
 #bar .brand-word svg { height: 28px; }
 
@@ -225,7 +243,7 @@ body:has(#setup:not([hidden])) { overflow: auto; }
   position: relative;
   display: grid;
   width: 100vw;
-  height: 100vh;
+  height: 100dvh; /* dvh: sul telefono esclude le barre del browser */
   padding: 12px;
   gap: 0;
   grid-template-columns: 1.6fr repeat(9, 1fr) 1.6fr;
@@ -320,7 +338,7 @@ body:has(#setup:not([hidden])) { overflow: auto; }
   z-index: 5;
   transition: transform .32s cubic-bezier(.3, .7, .3, 1.2);
   pointer-events: none;
-  filter: drop-shadow(2px 2px 0 rgba(26, 15, 23, .6));
+  filter: drop-shadow(0 2px 2px rgba(26, 15, 23, .4));
 }
 .token svg { display: block; width: 100%; height: 100%; fill: var(--pc); overflow: visible; }
 
@@ -351,7 +369,8 @@ body:has(#setup:not([hidden])) { overflow: auto; }
 .panel { padding: .9rem 1rem; }
 .panel h2, summary { margin: 0 0 .6rem; font: 400 .95rem var(--display); letter-spacing: .1em; text-transform: uppercase; cursor: pointer; }
 details:not([open]) summary { margin: 0; }
-details.log { min-height: 0; overflow: hidden; display: flex; flex-direction: column; }
+/* Cronaca stampata direttamente sul piano della plancia, senza riquadro */
+details.log { min-height: 0; overflow: hidden; display: flex; flex-direction: column; padding: .9rem .4rem 0; border-top: 2px dashed rgba(26, 15, 23, .35); }
 details.log[open] { flex: 1; }
 #manual { display: flex; flex-wrap: wrap; gap: .45rem; max-height: 40vh; overflow: auto; padding: 2px 4px 4px 2px; }
 #manual h3 { width: 100%; margin: .5rem 0 0; font: 400 1.05rem var(--display); letter-spacing: .04em; text-transform: uppercase; }
@@ -384,7 +403,7 @@ details.log[open] { flex: 1; }
   aspect-ratio: 5 / 7;
   border-radius: 10px;
   flex-shrink: 0;
-  box-shadow: 4px 4px 0 -1px var(--paper), 4px 4px 0 1px var(--ink), 8px 8px 0 -1px var(--paper), 8px 8px 0 1px var(--ink), 12px 12px 0 1px var(--ink);
+  box-shadow: 4px 4px 0 -1px var(--paper), 4px 4px 0 1px var(--ink), 8px 8px 0 -1px var(--paper), 8px 8px 0 1px var(--ink), 10px 16px 26px rgba(26, 15, 23, .28);
 }
 /* Etichetta in proporzione al dorso (cqh = % dell'altezza), così resta dentro la cornice tratteggiata a qualsiasi misura. */
 .deck-face { position: absolute; inset: 0; border-radius: 10px; overflow: hidden; container-type: size; }
@@ -432,7 +451,7 @@ details.log[open] { flex: 1; }
   padding-bottom: 9px; /* niente contenuto sulla cornice interna (linea a 6px dal bordo) */
   font-size: 4cqh;
 }
-.card { filter: drop-shadow(7px 7px 0 rgba(26, 15, 23, .9)); }
+.card { filter: drop-shadow(0 14px 18px rgba(26, 15, 23, .3)) drop-shadow(0 3px 4px rgba(26, 15, 23, .15)); }
 .face.front header {
   margin: 9px 9px 0;
   padding: .5em .6em .6em;
@@ -552,9 +571,15 @@ details.log[open] { flex: 1; }
   transition: transform .2s, box-shadow .2s, filter .2s, opacity .2s;
 }
 .player::before { content: ''; position: absolute; inset: 0 0 auto; height: 1.3rem; background: var(--pc); border-bottom: var(--stroke); }
-.player.active { transform: translate(-2px, -2px); box-shadow: 7px 7px 0 var(--ink); }
+.player.active { transform: translateY(-3px); box-shadow: var(--lift); }
 .player.active::after { content: 'Tocca a te'; position: absolute; top: .12rem; right: .7rem; font: 400 .8rem var(--display); letter-spacing: .1em; text-transform: uppercase; }
-.player.idle { transform: scale(.9); transform-origin: top center; opacity: .6; filter: saturate(.4) brightness(.95); }
+/* Giocatore non di turno: striscia bassa su una riga, fascia colore a sinistra invece che in alto */
+.player.idle { display: flex; flex-wrap: wrap; align-items: center; gap: .2rem .9rem; padding: .45rem .5rem .45rem 1.1rem; opacity: .7; filter: saturate(.5); }
+.player.idle::before { inset: 0 auto 0 0; width: .55rem; height: auto; border-bottom: 0; border-right: var(--stroke); }
+.player.idle .who { font-size: .95rem; }
+.player.idle .money { font-size: 1.25rem; margin: 0; }
+.player.idle .meta { flex-basis: 100%; flex-wrap: nowrap; font-size: .7rem; gap: .5rem; white-space: nowrap; }
+.player.idle .hand { margin-top: 0; font-size: .75rem; }
 .player.winner { background: #FFF3B0; }
 .player.winner::after { content: 'Vince!'; position: absolute; top: .12rem; right: .7rem; font: 400 .8rem var(--display); letter-spacing: .1em; text-transform: uppercase; }
 .player .who { display: flex; align-items: center; gap: .5rem; font-size: 1.1rem; }
@@ -584,3 +609,145 @@ details.log[open] { flex: 1; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
+
+/* ---------- Telefono in orizzontale: schermo basso (≤ 500px) ---------- */
+@media (orientation: landscape) and (max-height: 500px) {
+  /* setup: coperchio con l'insegna a sinistra, modulo a destra */
+  #setup { width: min(820px, 96vw); display: grid; grid-template-columns: 1fr 1.25fr; }
+  #setup .lid { display: grid; place-items: center; border-bottom: 0; border-right: 3px solid var(--ink); border-radius: 15px 0 0 15px; padding: .6rem; }
+  #setup .lid::after { display: none; }
+  .brand-sign svg { max-height: 70dvh; margin: 0 auto; }
+  .deco { display: none; }
+  .setup-body { padding: .8rem 1.2rem; gap: .5rem; align-content: center; }
+  .lead { font-size: 1.1rem; }
+  #setup button.primary { font-size: 1.15rem; padding: .45rem; }
+  body:has(#setup:not([hidden])) { overflow: auto; place-items: safe center; padding: 8px 0; box-sizing: border-box; }
+  #setup .muted { font-size: .75rem; }
+  .field { padding: .3rem .6rem .3rem 1rem; }
+  .field input { padding: .3rem .5rem; }
+  .field input[type="number"] { width: 3.2rem; }
+
+  /* tabellone: bordo sottile, niente zoom sul lato (ruberebbe spazio al centro) */
+  #board { padding: 4px; font-size: 10px; }
+  #board, #board[data-focus] { grid-template-columns: 1.4fr repeat(9, 1fr) 1.4fr; grid-template-rows: 1.4fr repeat(9, 1fr) 1.4fr; --zf: 1em; }
+  .cell { padding: .2em; gap: .1em; }
+  .cell .num { display: none; }
+  .cell .name { font-size: .85em; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+  .cell:not(.corner) .art-svg { width: 1.6em; height: 1.6em; min-height: 0; }
+  .cell .price { font-size: .8em; }
+  /* colonne laterali: caselle basse, solo testo */
+  .cell.l .art-svg, .cell.r .art-svg { display: none; }
+  .cell.l, .cell.r { padding: .1em .5em; }
+  .cell.t-prop.l { padding-right: 1.3em; }
+  .cell.t-prop.r { padding-left: 1.3em; }
+  .cell.l .name, .cell.r .name { -webkit-line-clamp: 1; }
+  .cell.t-prop.b, .cell.t-prop.t { padding-top: 1em; padding-bottom: .2em; }
+  .cell.t-prop.t { padding-top: .2em; padding-bottom: 1em; }
+  .cell.corner .art-svg { width: 2.6em; height: 2.6em; }
+  .cell.corner .name { font-size: 1.1em; }
+  .cell.corner .sub { display: none; }
+  .token { width: 14px; }
+
+  /* centro: giocatori | tavolo; cronaca nascosta, regole manuali sotto i giocatori */
+  #center { grid-template-columns: minmax(130px, .9fr) minmax(0, 3fr); grid-template-rows: minmax(0, 1fr) auto; gap: 6px 8px; padding: 6px; font-size: 13px; }
+  .col { gap: 6px; overflow: auto; }
+  .col.side-left { grid-area: 1 / 1; }
+  .col.mid { grid-area: 1 / 2 / 3 / 3; }
+  .col.side-right { grid-area: 2 / 1; overflow: visible; } /* sotto i giocatori */
+  details.log { display: none; }
+  .panel { padding: .4rem .6rem; }
+  .side-right details[open] { position: absolute; z-index: 10; left: 8px; right: 8px; bottom: 8px; max-height: 80%; overflow: auto; }
+  #manual { max-height: none; }
+  .side-right summary { font-size: .75rem; letter-spacing: .04em; white-space: nowrap; }
+
+  #players { gap: 6px; }
+  .player { padding: 1.3rem .6rem .45rem; }
+  .player::before { height: .9rem; }
+  .player.active::after, .player.winner::after { top: 0; right: .4rem; font-size: .6rem; }
+  .player.idle { transform: none; }
+  .player .who { font-size: .9rem; }
+  .player .money { font-size: clamp(1.1rem, 6dvh, 1.5rem); }
+  .player .meta { font-size: .72rem; gap: .1rem .6rem; }
+  .player .hand { font-size: .8rem; }
+  .delta { top: 1rem; font-size: 1.1rem; }
+  #center { position: relative; }
+  #timer { position: absolute; top: 8px; right: 8px; z-index: 6; padding: .4rem; gap: .3rem; } /* sopra i dadi, nell'angolo libero del tavolo */
+  #timer svg { width: 70px; height: 70px; }
+  #timer .time { top: calc(.4rem + 35px); font-size: 1.3rem; }
+
+  /* tavolo: carte alte quanto il centro, dadi e pulsanti in colonna a destra */
+  .col.mid { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: auto minmax(0, 1fr) auto; gap: 6px 10px; align-items: center; justify-items: center; }
+  #alert { grid-column: 1 / -1; padding: .3rem .7rem; font-size: .8rem; }
+  .table { grid-row: 2 / 4; height: 100%; --card-h: min(calc(76dvh - 40px), 330px); gap: 10px; }
+  .table:has(.card + .card) { --card-h: min(calc(76dvh - 40px), 330px); }
+  .table:has(.card) .deck { display: none; }
+  .deck { height: calc(var(--card-h) * .5); }
+  .hint { font-size: .9rem; }
+  .hint b { font-size: 1.6rem; }
+  .hint .art-svg { width: 2.4em; height: 2.4em; }
+  #dice { grid-column: 2; grid-row: 2; gap: 12px; margin: 0; align-self: end; }
+  .die { --s: 36px; }
+  #actions { grid-column: 2; grid-row: 3; flex-direction: column; align-items: stretch; min-height: 0; max-width: 160px; gap: .4rem; }
+  #actions button { font-size: .9rem; padding: .45rem .7rem; }
+}
+
+/* Telefoni piccoli con le barre del browser: dettagli solo per chi è di turno */
+@media (orientation: landscape) and (max-height: 360px) {
+  .player.idle .meta, .player.idle .hand { display: none; }
+}
+
+/* Telefono in verticale: il tabellone non ci sta, chiedi di ruotare */
+@media (orientation: portrait) and (max-width: 600px) {
+  body:has(#board:not([hidden]))::after {
+    content: '⟳  Ruota il telefono in orizzontale per giocare';
+    position: fixed; inset: 0; z-index: 100;
+    display: grid; place-items: center; padding: 2rem; text-align: center;
+    font: 400 1.6rem/1.3 var(--display); letter-spacing: .04em; text-transform: uppercase;
+    color: var(--cream); background: var(--velvet);
+  }
+}
+
+/* Box informativo della casella (hover / focus): mini-carta con fascia colore. */
+.cell:focus-visible { outline: 3px solid var(--blu); outline-offset: -3px; z-index: 2; }
+#tip {
+  --tint: var(--g, var(--ink));
+  position: fixed;
+  top: 0; left: 0;
+  z-index: 50;
+  width: min(280px, calc(100vw - 16px));
+  background: var(--paper);
+  border: var(--stroke);
+  border-radius: var(--radius);
+  box-shadow: var(--lift);
+  font-size: 14px;
+  line-height: 1.4;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .12s, visibility 0s .12s;
+}
+#tip.on { opacity: 1; visibility: visible; transition: opacity .12s .15s; }
+#tip.t-card { --tint: var(--arancione); }
+#tip.t-room { --tint: var(--stanza); }
+#tip.t-tax { --tint: var(--rose); }
+#tip.t-bonus { --tint: var(--gold); }
+#tip header {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: end;
+  gap: 0 .6em;
+  padding: .7em .9em .6em;
+  border-top: 10px solid var(--tint);
+  border-bottom: 1px solid rgba(26, 15, 23, .15);
+}
+#tip small { grid-column: 1 / -1; color: var(--muted); font-size: .75em; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+#tip header b { font-family: var(--display); font-weight: 400; font-size: 1.3em; line-height: 1.1; }
+#tip .price { font-weight: 700; font-variant-numeric: tabular-nums; }
+#tip p { margin: 0; padding: .6em .9em 0; }
+#tip .rent { color: var(--muted); font-size: .88em; padding-top: .35em; }
+#tip .rent b { color: var(--ink); font-variant-numeric: tabular-nums; }
+#tip > :last-child { padding-bottom: .8em; }
+#tip footer { display: flex; flex-wrap: wrap; gap: .4em; padding: .7em .9em 0; }
+#tip .chip.p0, #tip .chip.p1 { background: var(--pc); }
+@media (prefers-reduced-motion: reduce) { #tip, #tip.on { transition: none; } }

@@ -7,6 +7,8 @@ import { icon, sticker } from './icons.js';
 import { ART } from './art.js';
 import signSvg from '../brand/export/insegna.svg?raw';
 import wordSvg from '../brand/export/logotipo.svg?raw';
+import markUrl from '../brand/export/simbolo.svg?url';
+import logoUrl from '../brand/export/semplificato.svg?url';
 
 const KEY = 'strip-street-save-v3'; // cambiare versione se cambia la forma dello stato
 const $ = (id) => document.getElementById(id);
@@ -59,7 +61,8 @@ function buildBoard() {
     el.className = `cell t-${c.type} ${side(i)}`;
     el.style.gridArea = `${r} / ${col}`;
     if (c.type === 'prop') el.style.setProperty('--g', `var(--${c.group})`);
-    el.title = `${c.title}: ${c.text}`;
+    el.tabIndex = 0; // il box si apre anche da tastiera
+    el.setAttribute('aria-describedby', 'tip');
     el.innerHTML = `<span class="num">${i + 1}</span>${art(c)}`
       + `<span class="txt"><span class="name">${c.title}</span>`
       + (c.price ? `<span class="price">${c.price}€</span>` : '')
@@ -76,7 +79,56 @@ function buildBoard() {
   $('deck-act').innerHTML = back('Attività', 'deckAct', '');
   $('deck-prop').innerHTML = back('Proprietà', 'deckProp', '');
   addEventListener('resize', () => s && s.players.forEach((p, n) => placeToken(n, p.pos)));
+  const tip = document.createElement('div');
+  tip.id = 'tip';
+  tip.setAttribute('role', 'tooltip');
+  document.body.append(tip);
+  const open = (e) => { const cell = e.target.closest?.(".cell"); if (cell && (tip.dataset.at !== cell.id || !tip.classList.contains("on"))) showTip(cell); };
+  board.addEventListener('pointerover', open);
+  board.addEventListener('focusin', open);
+  board.addEventListener('pointerleave', hideTip);
+  board.addEventListener('focusout', hideTip);
+  addEventListener('scroll', hideTip, true);
 }
+
+// --- Box informativo della casella (hover / focus) ---
+
+function showTip(cell) {
+  const tip = $('tip');
+  const i = +cell.id.slice(1);
+  const c = BOARD[i];
+  const owner = s?.owners[i];
+  const here = s ? s.players.filter((p) => p.pos === i).map((p) => esc(p.name)) : [];
+  const rent = c.type === 'prop' ? `Affitto <b>${RENT[c.group]}€</b> · colore completo <b>${RENT[c.group] * 2}€</b>`
+    : c.type === 'room' ? 'Affitto <b>25 · 50 · 100 · 200€</b> per 1–4 stanze' : '';
+  const status = owner != null ? `<span class="chip p${owner}">Di ${esc(s.players[owner].name)}</span>`
+    : c.price ? '<span class="chip">Libera</span>' : '';
+  tip.className = `t-${c.type}`;
+  tip.dataset.at = cell.id;
+  tip.style.setProperty('--g', c.type === 'prop' ? `var(--${c.group})` : '');
+  tip.innerHTML = `<header><small>${c.name} · casella ${i + 1}</small><b>${c.title}</b>`
+    + (c.price ? `<span class="price">${c.price}€</span>` : '') + '</header>'
+    + `<p>${c.text}</p>`
+    + (rent ? `<p class="rent">${rent}</p>` : '')
+    + (c.timer ? `<p class="rent">Sfida a tempo: <b>${c.timer}s</b></p>` : '')
+    + (status || here.length ? `<footer>${status}${here.length ? `<span class="chip">Qui: ${here.join(', ')}</span>` : ''}</footer>` : '');
+  // Si apre verso il centro del tavolo (non copre le caselle vicine); sempre dentro lo schermo.
+  const r = cell.getBoundingClientRect();
+  tip.classList.add('on');
+  const w = tip.offsetWidth, h = tip.offsetHeight, m = 8;
+  const sd = side(i), cx = r.left + r.width / 2 - w / 2, cy = r.top + r.height / 2 - h / 2;
+  let x = cx, y = cy;
+  if (sd === 'l') x = r.right + m;
+  else if (sd === 'r') x = r.left - w - m;
+  else if (sd === 't') y = r.bottom + m;
+  else if (sd === 'b') y = r.top - h - m;
+  else { x = i === 0 || i === 30 ? r.left - w - m : r.right + m; y = i < 20 ? r.top - h - m : r.bottom + m; } // angoli
+  x = Math.min(Math.max(x, m), innerWidth - w - m);
+  y = Math.min(Math.max(y, m), innerHeight - h - m);
+  tip.style.transform = `translate(${x}px, ${y}px)`;
+}
+
+const hideTip = () => $('tip')?.classList.remove('on');
 
 function placeToken(n, pos, hop = false) {
   const cell = $(`c${pos}`);
@@ -298,7 +350,7 @@ $('open-settings').onclick = () => $('settings').showModal();
 // Barra in alto: si apre/chiude solo con la linguetta; un clic fuori la richiude.
 function toggleBar(open = !$('bar').classList.contains('open')) {
   $('bar').classList.toggle('open', open);
-  $('bar-tab').textContent = open ? 'Chiudi ▴' : 'Menu ▾';
+  $('bar-tab').textContent = open ? 'Nascondi ▴' : 'Mostra ▾';
   $('bar-tab').setAttribute('aria-expanded', open);
 }
 $('bar-tab').onclick = () => toggleBar();
@@ -325,6 +377,14 @@ $('brand-sign').insertAdjacentHTML('beforeend', signSvg);
 $('setup-deco').innerHTML = ['Cherry', 'Heart', 'Crown', 'Flame', 'Ribbon'].map((k) => ART[k]).join('');
 document.querySelectorAll('.field').forEach((f) => f.insertAdjacentHTML('afterbegin', `<span class="pawn">${PAWN}</span>`));
 $('brand-word').insertAdjacentHTML('beforeend', wordSvg);
+// Sfondo del setup: simboli e stelle sparsi a caso, logo fisso in basso a destra.
+const STAR = '<svg viewBox="-10 -10 20 20"><path d="M0-10Q1-1 10 0Q1 1 0 10Q-1 1-10 0Q-1-1 0-10Z"/></svg>';
+$('setup-bg').innerHTML = Array.from({ length: 34 }, (_, i) => {
+  const mark = i % 4 === 0;
+  const size = mark ? 40 + Math.random() * 50 : 8 + Math.random() * 22;
+  const css = `left:${Math.random() * 100}%;top:${Math.random() * 100}%;width:${size}px;--r:${Math.random() * 60 - 30}deg;--d:${(Math.random() * 4).toFixed(1)}s`;
+  return mark ? `<img class="bg-mark" src="${markUrl}" alt="" style="${css}">` : `<i class="bg-star" style="${css}">${STAR}</i>`;
+}).join('') + `<img class="bg-logo" src="${logoUrl}" alt="">`;
 
 buildBoard();
 render();

@@ -1,6 +1,7 @@
 node_modules/
 dist/
 .playwright-mcp/
-.impeccable/hook.cache.json
+.impeccable/
 .claude/
 .impeccable/
+.env

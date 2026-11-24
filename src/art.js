@@ -26,6 +26,8 @@ const CELLS = {
   Sparkles: star(46, 54, 34, C.gold) + star(80, 22, 13, C.rose) + star(22, 22, 9, C.sky) + star(82, 82, 7, C.white),
   Eye: `<path d="M8 50Q50 10 92 50Q50 90 8 50Z" fill="${C.white}"/><circle cx="50" cy="50" r="18" fill="${C.blue}"/><circle cx="50" cy="50" r="8" fill="${INK}"/>`
     + `<circle cx="56" cy="44" r="4" fill="${C.white}" stroke="none"/><path d="M30 26l-4-9M50 20v-10M70 26l4-9"/>`,
+  MessageCircleQuestion: `<path d="M50 14C74 14 90 28 90 46S74 78 50 78C44 78 38 77 33 75L14 86L20 68C13 62 10 54 10 46C10 28 26 14 50 14Z" fill="${C.sky}"/>`
+    + tube('M41 37a10 10 0 1 1 14 9c-3 1.5-5 3-5 7v2', C.white, 5) + `<circle cx="50" cy="65" r="4.5" fill="${C.white}"/>`,
   MessageCircleHeart: `<path d="M50 14C74 14 90 28 90 46S74 78 50 78C44 78 38 77 33 75L14 86L20 68C13 62 10 54 10 46C10 28 26 14 50 14Z" fill="${C.white}"/>`
     + heartAt(50, 47, 0.95, C.rose),
   Heart: heartAt(50, 52, 2, C.rose) + `<path d="M28 34a12 12 0 0 1 12-8" fill="none" stroke="${C.pink}" stroke-width="5"/>` + heartAt(84, 18, 0.4, C.pink) + heartAt(16, 82, 0.35, C.red),

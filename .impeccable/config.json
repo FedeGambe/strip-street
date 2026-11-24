@@ -65,6 +65,30 @@
         ],
         "createdAt": "2026-11-24T15:17:19.390Z",
         "reason": "Claude: print.html contains only board cells and cards; the side band is the property colour strip of a Monopoly-style board (domain-appropriate)"
+      },
+      {
+        "rule": "overused-font",
+        "value": "inter",
+        "createdAt": "2026-11-24T16:08:54.453Z",
+        "reason": "user chose Lilita One + Inter as app fonts (recorded in project memory); manual mirrors app"
+      },
+      {
+        "rule": "nested-cards",
+        "value": "*",
+        "files": [
+          "brand/brand-board.html"
+        ],
+        "createdAt": "2026-11-24T16:08:54.922Z",
+        "reason": "Claude: brand manual tiles show app components (buttons, property cards) as specimens; nesting is the demo"
+      },
+      {
+        "rule": "cream-palette",
+        "value": "*",
+        "files": [
+          "brand/brand-board.html"
+        ],
+        "createdAt": "2026-11-24T16:08:55.385Z",
+        "reason": "Claude: cream paper is the app's board-game palette (--paper #FFF8EC) after user-requested Monopoly-style restyle; manual documents it"
       }
     ]
   }

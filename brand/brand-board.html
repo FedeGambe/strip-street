@@ -1,262 +1,217 @@
-<title>Strip Street Brand</title>
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Strip Street · Manuale del brand</title>
 <meta name="claude:viewport-fit-sides" content="cover">
+<link rel="icon" href="export/simbolo.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=Bodoni+Moda:ital,opsz,wght@1,6..96,500;1,6..96,700&family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lilita+One&display=swap" rel="stylesheet">
 <style>
-/* Layout: manuale verticale a capitoli; ogni capitolo = titolo, regola in breve, esempi. Look notturno unico (scelta voluta). */
+/* Manuale nello stesso stile dell'app: carta crema, contorni d'inchiostro, ombre piene. I loghi sono i file di export/ (generati da build.py). */
 :root {
-  --night: #1A0F17;
-  --night-2: #0E080C;
-  --velvet: #4A1530;
-  --rose: #E0446E;
-  --glow: #FF8FB0;
-  --teal: #3FB8AF;
-  --gold: #E7C98B;
-  --bulb: #FFE9B0;
-  --cream: #F6EEE9;
-  --muted: #B9A3AE;
-  --line: #3A2531;
-  --f-display: "Anton", "Impact", "Arial Narrow", sans-serif;
-  --f-script: "Bodoni Moda", "Didot", "Times New Roman", serif;
-  --f-body: "Outfit", system-ui, sans-serif;
-  --f-mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
-  color-scheme: dark;
+  --ink: #1A0F17; --paper: #FFF8EC; --paper-2: #F3E8D4; --velvet: #4A1530; --felt: #CDE9D4;
+  --rose: #E0446E; --rose-deep: #C8285A; --teal: #3FB8AF; --gold: #F5C842; --muted: #6B5A63;
+  --stroke: 2px solid var(--ink); --hard: 4px 4px 0 var(--ink); --radius: 12px;
+  --display: 'Lilita One', 'Arial Rounded MT Bold', system-ui, sans-serif;
+  --font: 'Inter', system-ui, sans-serif;
+  --pop: cubic-bezier(.3, 1.5, .5, 1);
+  color-scheme: light;
 }
 * { box-sizing: border-box; }
-body { background: var(--night); color: var(--cream); font: 300 16px/1.55 var(--f-body);
-  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 0 4rem; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 400 16px/1.55 var(--font);
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-bottom: 4rem; }
 .wrap { max-width: 1080px; margin: 0 auto; }
-header { padding-block: 3rem 2rem; border-bottom: 1px solid var(--line); display: grid; gap: 1rem; }
-header .hero { min-height: 340px; }
-.eyebrow { font: 600 .75rem/1 var(--f-body); letter-spacing: .18em; text-transform: uppercase; color: var(--gold); }
-h1 { font: 400 clamp(2.4rem, 7vw, 4.5rem)/.95 var(--f-display); letter-spacing: .02em; margin: 0; text-transform: uppercase; }
-h1 em { font: italic 500 .7em var(--f-script); text-transform: none; color: var(--rose); letter-spacing: 0; }
+header { padding-block: 3rem 2rem; display: grid; gap: 1.25rem; }
+.eyebrow { font: 700 .75rem/1 var(--font); letter-spacing: .16em; text-transform: uppercase; color: var(--rose-deep); }
+h1 { font: 400 clamp(2.6rem, 7vw, 4.6rem)/.95 var(--display); margin: 0; }
+h1 em { font-style: normal; color: var(--rose-deep); }
 .lead { max-width: 62ch; color: var(--muted); margin: 0; }
-nav.toc { display: flex; flex-wrap: wrap; gap: .4rem .9rem; font-size: .85rem; }
-nav.toc a { color: var(--muted); text-decoration: none; border-bottom: 1px solid var(--line); }
-nav.toc a:hover, nav.toc a:focus-visible { color: var(--cream); border-color: var(--gold); outline: none; }
-h2 { font: 400 2.2rem/1 var(--f-display); text-transform: uppercase; letter-spacing: .03em; margin: 0; text-wrap: balance; }
-h2 small { font: italic 500 1.1rem var(--f-script); text-transform: none; color: var(--gold); letter-spacing: 0; margin-left: .5rem; }
-h3 { font: 600 .75rem/1.2 var(--f-body); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin: 0; }
-section { padding-block: 3rem; border-bottom: 1px solid var(--line); display: grid; gap: 1.5rem; }
+nav.toc { display: flex; flex-wrap: wrap; gap: .5rem; }
+nav.toc a { color: var(--ink); text-decoration: none; font: 600 .85rem var(--font); padding: .3rem .7rem; border: var(--stroke); border-radius: 999px; background: #fff; box-shadow: 2px 2px 0 var(--ink); }
+nav.toc a:hover, nav.toc a:focus-visible { background: var(--gold); outline: none; }
+h2 { font: 400 2.2rem/1 var(--display); margin: 0; text-wrap: balance; }
+h2 small { font: 600 1rem var(--font); color: var(--muted); margin-left: .5rem; }
+h3 { font: 700 .75rem/1.2 var(--font); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin: 0; }
+section { padding-block: 3rem; border-top: 2px dashed color-mix(in srgb, var(--ink) 25%, transparent); display: grid; gap: 1.5rem; }
 .rule { max-width: 66ch; color: var(--muted); margin: 0; }
-.rule b { color: var(--cream); font-weight: 600; }
-.hero { background: radial-gradient(120% 90% at 30% 10%, var(--velvet), var(--night) 70%); border: 1px solid var(--line);
-  border-radius: 6px; display: grid; place-items: center; padding: 2.5rem 1rem; position: relative; }
-.hero svg { width: min(100%, 520px); height: auto; overflow: visible; }
-.replay { position: absolute; right: .75rem; bottom: .75rem; background: var(--night); border: 1px solid var(--line); color: var(--muted);
-  font: 400 .8rem var(--f-body); padding: .4rem .8rem; border-radius: 999px; cursor: pointer; }
-.replay:hover, .replay:focus-visible { color: var(--cream); border-color: var(--gold); outline: none; }
-.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 1rem; }
-.grid.two { grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
-.tile { border-radius: 6px; padding: 1.25rem; display: grid; gap: .75rem; align-content: start; min-width: 0; border: 1px solid var(--line); background: var(--night-2); }
-.tile svg { width: 100%; height: 140px; }
-.tile p { margin: 0; font-size: .85rem; color: var(--muted); }
-.tile.light { background: var(--cream); color: var(--night); border-color: transparent; }
-.tile.light h3, .tile.light p { color: #6E5462; }
-.tile.velvet { background: var(--velvet); }
-.tile.velvet h3 { color: #F2D3DE; }
-.tile.rose { background: var(--rose); border-color: transparent; }
-.tile.rose h3, .tile.rose p { color: var(--night); }
-.tile.photo { background: repeating-linear-gradient(115deg, #2b1a24 0 14px, #3d2632 14px 28px); }
-.tag { font: 600 .7rem/1 var(--f-body); letter-spacing: .12em; text-transform: uppercase; padding: .3rem .5rem; border-radius: 3px; justify-self: start; }
-.tag.main { background: var(--gold); color: var(--night); }
-.tag.alt { border: 1px solid var(--muted); color: var(--muted); }
-.tile.light .tag.alt { border-color: #6E5462; color: #6E5462; }
+.rule b { color: var(--ink); font-weight: 600; }
 
-/* area di rispetto */
-.clear { position: relative; display: grid; place-items: center; padding: 1.5rem; }
-.clear .box { border: 1.5px dashed var(--teal); padding: 28px; position: relative; }
-.clear .box svg { width: 220px; height: auto; display: block; outline: 1px solid rgba(63,184,175,.35); }
-.clear .x { position: absolute; font: 600 .75rem var(--f-mono); color: var(--teal); }
-.clear .x.t { top: 6px; left: 50%; transform: translateX(-50%); }
-.clear .x.l { left: 6px; top: 50%; transform: translateY(-50%); }
+/* tavolo: velluto a pois come l'app */
+.table { background: radial-gradient(circle at 1px 1px, rgba(255,255,255,.07) 1px, transparent 0) 0 0 / 14px 14px, var(--velvet); }
+.hero { border: var(--stroke); border-radius: var(--radius); box-shadow: var(--hard); display: grid; place-items: center; padding: 2.5rem 1rem; position: relative; min-height: 360px; }
+.hero .logo { width: min(100%, 480px); }
+.hero .logo svg, .hero .logo img { display: block; width: 100%; height: auto; overflow: visible; }
+.replay { position: absolute; right: .9rem; bottom: .9rem; font: 600 .8rem var(--font); padding: .4rem .9rem; border: var(--stroke); border-radius: 999px; background: var(--paper); color: var(--ink); box-shadow: 2px 2px 0 var(--ink); cursor: pointer; }
+.replay:hover, .replay:focus-visible { background: var(--gold); outline: none; }
+.replay:active { transform: translate(2px, 2px); box-shadow: none; }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 1.25rem; }
+.grid.two { grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
+.tile { border: var(--stroke); border-radius: var(--radius); box-shadow: var(--hard); background: #fff; padding: 1.25rem; display: grid; gap: .75rem; align-content: start; min-width: 0; position: relative; }
+.tile img { width: 100%; height: 150px; object-fit: contain; }
+.tile p { margin: 0; font-size: .875rem; color: var(--muted); }
+.tile.cream { background: var(--paper-2); }
+.tile.table h3, .tile.ink h3 { color: #F3E3EA; }
+.tile.ink { background: var(--ink); }
+.tile.felt { background: var(--felt); }
+.tag { font: 700 .7rem/1 var(--font); letter-spacing: .1em; text-transform: uppercase; padding: .3rem .55rem; border: var(--stroke); border-radius: 999px; justify-self: start; background: var(--gold); }
+.tag.alt { background: #fff; }
+
+/* spazio e misure */
+.clear { display: grid; place-items: center; padding: 1rem; }
+.clear .box { border: 2px dashed var(--teal); padding: 26px; position: relative; }
+.clear .box img { width: 220px; height: auto; display: block; outline: 1px solid color-mix(in srgb, var(--teal) 50%, transparent); }
+.clear .x { position: absolute; font: 700 .75rem var(--font); color: #1F7F78; }
+.clear .x.t { top: 4px; left: 50%; transform: translateX(-50%); }
+.clear .x.l { left: 7px; top: 50%; transform: translateY(-50%); }
 .sizes { display: flex; align-items: end; gap: 1.5rem; flex-wrap: wrap; }
-.sizes figure { margin: 0; display: grid; gap: .4rem; justify-items: center; font: 400 .75rem var(--f-mono); color: var(--muted); }
+.sizes figure { margin: 0; display: grid; gap: .4rem; justify-items: center; font: 500 .75rem var(--font); color: var(--muted); }
+.sizes img { display: block; }
 
 /* errori */
-.dont { position: relative; }
-.dont svg { width: 100%; height: 120px; }
-.dont .no { position: absolute; top: .9rem; right: .9rem; width: 26px; height: 26px; border-radius: 50%; background: var(--rose); color: var(--night);
-  display: grid; place-items: center; font: 600 .9rem var(--f-body); }
+.dont .no { position: absolute; top: -12px; right: -12px; width: 30px; height: 30px; border-radius: 50%; background: var(--rose-deep); color: #fff; border: var(--stroke);
+  display: grid; place-items: center; font: 700 .9rem var(--font); }
+.dont img { height: 120px; }
+.photo { background: repeating-linear-gradient(115deg, #F07AA0 0 14px, #FFD84A 14px 28px, #6CC7F0 28px 42px); }
 
-/* palette */
-.sw { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: .75rem; }
-.sw > div { border-radius: 6px; border: 1px solid var(--line); overflow: hidden; background: var(--night-2); }
-.sw i { display: block; height: 84px; }
-.sw div div { padding: .7rem .8rem; font: 400 .8rem/1.45 var(--f-body); }
-.sw b { display: block; font-weight: 600; font-size: .9rem; }
-.sw code { font: 400 .75rem var(--f-mono); color: var(--muted); }
-.board { display: grid; grid-template-columns: repeat(8, 1fr); border-radius: 6px; overflow: hidden; }
-.board div { height: 56px; display: grid; align-items: end; padding: .4rem; font: 600 .7rem var(--f-body); color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,.6); }
-@media (max-width: 560px) { .board { grid-template-columns: repeat(4, 1fr); } }
-.ratio { display: flex; height: 18px; border-radius: 3px; overflow: hidden; }
+/* colori */
+.sw { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; }
+.sw > div { border: var(--stroke); border-radius: var(--radius); overflow: hidden; background: #fff; box-shadow: 3px 3px 0 var(--ink); }
+.sw i { display: block; height: 80px; border-bottom: var(--stroke); }
+.sw div div { padding: .7rem .8rem; font: 400 .8rem/1.45 var(--font); }
+.sw b { display: block; font-weight: 700; font-size: .9rem; }
+.sw code, .spec, pre, .scale code { font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace; }
+.sw code { font-size: .75rem; color: var(--muted); }
+.ratio { display: flex; height: 22px; border: var(--stroke); border-radius: 999px; overflow: hidden; }
+.board { display: grid; grid-template-columns: repeat(9, 1fr); border: var(--stroke); border-radius: var(--radius); overflow: hidden; box-shadow: var(--hard); background: var(--paper); }
+.board div { border-right: var(--stroke); padding-bottom: .5rem; display: grid; grid-template-rows: 26px auto; gap: .45rem; font: 700 .7rem var(--font); text-align: center; }
+.board div:last-child { border-right: 0; }
+.board div i { border-bottom: var(--stroke); }
+@media (max-width: 640px) { .board { grid-template-columns: repeat(3, 1fr); } .board div { border-bottom: var(--stroke); } }
 
-/* tipografia */
-.font { display: grid; gap: .6rem; padding: 1.25rem; border: 1px solid var(--line); border-radius: 6px; background: var(--night-2); min-width: 0; }
-.font .spec { font: 400 .78rem var(--f-mono); color: var(--muted); }
-.s-anton { font: 400 3.6rem/1 var(--f-display); text-transform: uppercase; letter-spacing: .03em; }
-.s-bodoni { font: italic 700 3.2rem/1 var(--f-script); color: var(--rose); }
-.s-outfit { font: 300 1.5rem/1.35 var(--f-body); }
+/* caratteri */
+.font { display: grid; gap: .6rem; }
+.font .spec { font-size: .78rem; color: var(--muted); }
+.s-display { font: 400 3.4rem/1 var(--display); }
+.s-body { font: 400 1.4rem/1.35 var(--font); }
 .scale { display: grid; gap: .9rem; }
-.scale > div { display: grid; grid-template-columns: 120px 1fr; gap: 1rem; align-items: baseline; border-bottom: 1px solid var(--line); padding-bottom: .9rem; }
-.scale code { font: 400 .75rem var(--f-mono); color: var(--muted); }
+.scale > div { display: grid; grid-template-columns: 130px 1fr; gap: 1rem; align-items: baseline; border-bottom: 2px dashed color-mix(in srgb, var(--ink) 20%, transparent); padding-bottom: .9rem; }
+.scale code { font-size: .75rem; color: var(--muted); }
 .scale p { margin: 0; min-width: 0; overflow-wrap: anywhere; }
 
+/* stile grafico: campioni dei componenti dell'app */
+.demo-row { display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; }
+.btn { font: 600 .95rem var(--font); padding: .6rem 1.2rem; border: var(--stroke); border-radius: 10px; background: var(--paper); box-shadow: 3px 3px 0 var(--ink); }
+.btn.primary { background: var(--rose-deep); color: #fff; }
+.prop { width: 120px; border: var(--stroke); border-radius: 8px; background: var(--paper); box-shadow: var(--hard); overflow: hidden; text-align: center; }
+.prop .band { height: 30px; border-bottom: var(--stroke); }
+.prop b { display: block; font: 400 1rem/1.1 var(--display); padding: .5rem .4rem .2rem; }
+.prop span { display: block; font: 600 .8rem var(--font); padding-bottom: .5rem; }
+.chip { display: inline-flex; align-items: center; gap: .4rem; font: 700 .8rem var(--font); padding: .3rem .7rem; border: var(--stroke); border-radius: 999px; background: #fff; }
+.chip i { width: 14px; height: 14px; border-radius: 50%; border: var(--stroke); }
+.sticker svg { width: 56px; height: 56px; }
+.sticker .fill { stroke: var(--gold); fill: var(--gold); }
+.sticker .ink { stroke: var(--ink); }
+
 /* tono */
-.voice { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; }
-.voice .tile p { color: var(--cream); font-size: 1rem; }
-.voice .yes h3 { color: var(--teal); }
-.voice .nope h3 { color: var(--rose); }
+.voice { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.25rem; }
+.voice .tile p { color: var(--ink); font-size: 1rem; }
+.voice .yes h3 { color: #1F7F78; }
+.voice .nope h3 { color: var(--rose-deep); }
 
 /* movimento */
-.motion .tile .demo { height: 90px; display: grid; place-items: center; }
-.motion code { font: 400 .75rem var(--f-mono); color: var(--muted); }
-.pill { width: 44px; height: 44px; }
-pre { margin: 0; background: var(--night-2); border: 1px solid var(--line); border-radius: 6px; padding: 1rem; overflow-x: auto; font: 400 .8rem/1.6 var(--f-mono); color: var(--cream); }
+.motion .demo { height: 90px; display: grid; place-items: center; }
+.motion code { font-size: .75rem; color: var(--muted); font-family: ui-monospace, Consolas, monospace; }
+pre { margin: 0; background: var(--ink); color: var(--paper); border-radius: var(--radius); box-shadow: 4px 4px 0 var(--rose-deep); padding: 1.1rem; overflow-x: auto; font-size: .8rem; line-height: 1.6; }
 
-/* ---------- animazioni logo ---------- */
-@keyframes flicker { 0%,8%,14%,30% { opacity: .15; } 4%,11%,20%,100% { opacity: 1; } }
-@keyframes rise { from { transform: translateY(40px) scale(.85); opacity: 0; } to { opacity: 1; } }
-@keyframes bulbOn { from { opacity: .1; } to { opacity: 1; } }
+/* animazioni: le stesse dell'app (src/style.css) */
+@keyframes sign-rise { from { transform: translateY(40px) scale(.85); opacity: 0; } }
+@keyframes bulb-on { from { opacity: .1; } }
 @keyframes chase { 0% { opacity: 1; } 66% { opacity: .35; } }
-@keyframes twinkle { 0% { transform: scale(.3) rotate(-90deg); opacity: 0; } 70% { transform: scale(1.15); opacity: 1; } 100% { transform: none; } }
-@keyframes drop { from { transform: translateY(-40px) rotate(-120deg); opacity: 0; } to { opacity: 1; } }
-.bulbs circle { animation: chase 1.2s steps(1) infinite; animation-delay: calc(var(--i) * -400ms); }
-.anim-vegas .sign { transform-box: view-box; transform-origin: 210px 300px; animation: rise 1s cubic-bezier(.3,1.5,.5,1) both; }
-.anim-vegas .bulbs circle { animation: bulbOn .2s ease calc(.6s + var(--i) * 25ms) both, chase 1.2s steps(1) calc(2.2s + var(--i) * -400ms) infinite; }
-.anim-vegas .n-strip { animation: flicker 2s steps(1) 1.6s both; }
-.anim-vegas .n-street { animation: flicker 2s steps(1) 2.4s both; }
-.anim-vegas .star { transform-box: fill-box; transform-origin: center; animation: twinkle 1s ease 3s both; }
-.anim-vegas .dice > g > use { animation: drop .7s cubic-bezier(.3,1.5,.6,1) 3.2s both; }
-/* demo movimento */
+@keyframes stamp { from { transform: scale(1.8); opacity: 0; } }
+@keyframes twinkle { 0% { transform: scale(.3) rotate(-90deg); opacity: 0; } 70% { transform: scale(1.15); opacity: 1; } }
+@keyframes die-drop { from { transform: translateY(-40px) rotate(-120deg); opacity: 0; } }
+.play .sign { transform-box: view-box; transform-origin: 210px 300px; animation: sign-rise 1s var(--pop) both; }
+.play .bulbs circle { animation: bulb-on .2s ease calc(.6s + var(--i) * 25ms) both, chase 1.2s steps(1) calc(2.2s + var(--i) * -400ms) infinite; }
+.play .n-strip, .play .n-street { transform-box: fill-box; transform-origin: center; animation: stamp .45s var(--pop) 1.6s both; }
+.play .n-street { animation-delay: 2s; }
+.play .star { transform-box: fill-box; transform-origin: center; animation: twinkle 1s ease 3s both; }
+.play .dice use { animation: die-drop .7s var(--pop) 3.2s both; }
 @keyframes roll { 0% { transform: translateX(-60px) rotate(-360deg); } 70% { transform: translateX(4px) rotate(10deg); } 100% { transform: rotate(-8deg); } }
 @keyframes flip { 0% { transform: rotateY(180deg); } 100% { transform: rotateY(0); } }
-@keyframes hop { 0%,100% { transform: translateY(0); } 40% { transform: translateY(-22px); } }
-@keyframes away { 0% { transform: none; opacity: 1; } 100% { transform: translate(40px,-40px) rotate(40deg); opacity: 0; } }
-@keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.12); } }
-.d-roll { animation: roll 1.2s cubic-bezier(.2,.8,.25,1) infinite alternate; }
-.d-flip { animation: flip .9s cubic-bezier(.3,1.3,.5,1) infinite alternate; transform-style: preserve-3d; }
-.d-hop { animation: hop .45s cubic-bezier(.3,1.5,.5,1) infinite; }
+@keyframes hop { 0%, 100% { transform: translateY(0); } 40% { transform: translateY(-22px); } }
+@keyframes away { 0% { transform: none; opacity: 1; } 100% { transform: translate(40px, -40px) rotate(40deg); opacity: 0; } }
+@keyframes press { 0%, 40%, 100% { transform: none; box-shadow: 3px 3px 0 var(--ink); } 55%, 80% { transform: translate(3px, 3px); box-shadow: 0 0 0 var(--ink); } }
+.d-roll { animation: roll 1.2s cubic-bezier(.2, .8, .25, 1) infinite alternate; }
+.d-flip { animation: flip .9s var(--pop) infinite alternate; }
+.d-hop { animation: hop .45s var(--pop) infinite; }
 .d-away { animation: away 1.2s ease-in infinite; }
-.d-pulse { animation: pulse .5s ease-in-out infinite; transform-origin: center; transform-box: fill-box; }
-
+.d-stamp { animation: stamp .45s var(--pop) infinite alternate; }
+.d-press { animation: press 1.4s ease infinite; }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; } }
 </style>
-
-<!-- ======= simboli del marchio (colori via variabili CSS: ogni declinazione li ricolora) ======= -->
-<svg width="0" height="0" style="position:absolute" aria-hidden="true">
-  <defs>
-    <linearGradient id="g-velvet" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5E1B3C"/><stop offset="1" stop-color="#33091F"/></linearGradient>
-    <linearGradient id="g-gold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F6E2AE"/><stop offset=".5" stop-color="#D8B26A"/><stop offset="1" stop-color="#F1D79A"/></linearGradient>
-    <filter id="f-neon" x="-20%" y="-50%" width="140%" height="200%"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-    <path id="star4" d="M0 -5 L1.3 -1.3 L5 0 L1.3 1.3 L0 5 L-1.3 1.3 L-5 0 L-1.3 -1.3Z"/>
-    <path id="star8" d="M0 -26 L4 -8 L16 -16 L8 -4 L26 0 L8 4 L16 16 L4 8 L0 26 L-4 8 L-16 16 L-8 4 L-26 0 L-8 -4 L-16 -16 L-4 -8Z"/>
-    <g id="die5"><rect x="-20" y="-20" width="40" height="40" rx="9" fill="#F6EEE9"/><g fill="#1A0F17"><circle cx="-9" cy="-9" r="3.6"/><circle cx="9" cy="-9" r="3.6"/><circle cx="0" cy="0" r="3.6"/><circle cx="-9" cy="9" r="3.6"/><circle cx="9" cy="9" r="3.6"/></g></g>
-
-    <!-- 1. Logo principale: l'insegna completa -->
-    <symbol id="vegas" viewBox="0 -14 420 314">
-      <g fill="var(--v-gold, url(#g-gold))"><rect x="176" y="250" width="10" height="50"/><rect x="234" y="250" width="10" height="50"/></g>
-      <g class="sign">
-        <path d="M18 150 L120 48 Q210 34 300 48 L402 150 L300 252 Q210 266 120 252 Z" fill="var(--v-bg, url(#g-velvet))" stroke="var(--v-gold, url(#g-gold))" stroke-width="3"/>
-        <path d="M46 150 L130 66 Q210 54 290 66 L374 150 L290 234 Q210 246 130 234 Z" fill="none" stroke="var(--v-gold, url(#g-gold))" stroke-width="1.2"/>
-        <g class="bulbs" fill="var(--v-bulb, #FFE9B0)"><circle cx="32.0" cy="150.0" r="3.4" style="--i:0"/><circle cx="45.3" cy="136.7" r="3.4" style="--i:1"/><circle cx="58.5" cy="123.5" r="3.4" style="--i:2"/><circle cx="72.0" cy="110.0" r="3.4" style="--i:3"/><circle cx="85.2" cy="96.8" r="3.4" style="--i:4"/><circle cx="98.5" cy="83.5" r="3.4" style="--i:5"/><circle cx="112.0" cy="70.0" r="3.4" style="--i:6"/><circle cx="125.4" cy="56.9" r="3.4" style="--i:7"/><circle cx="144.1" cy="54.4" r="3.4" style="--i:8"/><circle cx="162.8" cy="52.5" r="3.4" style="--i:9"/><circle cx="181.5" cy="51.2" r="3.4" style="--i:10"/><circle cx="200.2" cy="50.6" r="3.4" style="--i:11"/><circle cx="219.3" cy="50.6" r="3.4" style="--i:12"/><circle cx="238.1" cy="51.2" r="3.4" style="--i:13"/><circle cx="256.8" cy="52.5" r="3.4" style="--i:14"/><circle cx="275.4" cy="54.4" r="3.4" style="--i:15"/><circle cx="294.2" cy="56.9" r="3.4" style="--i:16"/><circle cx="307.8" cy="69.8" r="3.4" style="--i:17"/><circle cx="321.3" cy="83.3" r="3.4" style="--i:18"/><circle cx="334.5" cy="96.5" r="3.4" style="--i:19"/><circle cx="347.8" cy="109.8" r="3.4" style="--i:20"/><circle cx="361.3" cy="123.3" r="3.4" style="--i:21"/><circle cx="374.5" cy="136.5" r="3.4" style="--i:22"/><circle cx="387.8" cy="149.8" r="3.4" style="--i:23"/><circle cx="374.7" cy="163.3" r="3.4" style="--i:24"/><circle cx="361.5" cy="176.5" r="3.4" style="--i:25"/><circle cx="348.0" cy="190.0" r="3.4" style="--i:26"/><circle cx="334.8" cy="203.2" r="3.4" style="--i:27"/><circle cx="321.5" cy="216.5" r="3.4" style="--i:28"/><circle cx="308.0" cy="230.0" r="3.4" style="--i:29"/><circle cx="294.6" cy="243.1" r="3.4" style="--i:30"/><circle cx="275.9" cy="245.6" r="3.4" style="--i:31"/><circle cx="257.2" cy="247.5" r="3.4" style="--i:32"/><circle cx="238.5" cy="248.8" r="3.4" style="--i:33"/><circle cx="219.8" cy="249.4" r="3.4" style="--i:34"/><circle cx="200.7" cy="249.4" r="3.4" style="--i:35"/><circle cx="181.9" cy="248.8" r="3.4" style="--i:36"/><circle cx="163.2" cy="247.5" r="3.4" style="--i:37"/><circle cx="144.6" cy="245.6" r="3.4" style="--i:38"/><circle cx="125.9" cy="243.1" r="3.4" style="--i:39"/><circle cx="112.2" cy="230.2" r="3.4" style="--i:40"/><circle cx="98.7" cy="216.7" r="3.4" style="--i:41"/><circle cx="85.5" cy="203.5" r="3.4" style="--i:42"/><circle cx="72.2" cy="190.2" r="3.4" style="--i:43"/><circle cx="58.7" cy="176.7" r="3.4" style="--i:44"/><circle cx="45.5" cy="163.5" r="3.4" style="--i:45"/></g>
-        <g fill="var(--v-gold, url(#g-gold))"><use href="#star4" x="122" y="96"/><use href="#star4" x="298" y="96"/></g>
-        <text x="210" y="100" text-anchor="middle" font-family="Outfit, sans-serif" font-weight="600" font-size="11" letter-spacing="3.5" fill="var(--v-gold, url(#g-gold))">CASELLA N° 40</text>
-        <g class="dice" style="opacity:var(--v-dice, 1)"><g transform="translate(94 150) rotate(-14)"><use href="#die5"/></g><g transform="translate(326 150) rotate(16)"><use href="#die5"/></g></g>
-        <g class="n-strip">
-          <text x="210" y="168" text-anchor="middle" font-family="Anton, Impact, sans-serif" font-size="66" letter-spacing="5" fill="var(--v-glow, #FF8FB0)" filter="var(--v-filter, url(#f-neon))">STRIP</text>
-          <text x="210" y="168" text-anchor="middle" font-family="Anton, Impact, sans-serif" font-size="66" letter-spacing="5" fill="var(--v-white, #FFFFFF)">STRIP</text>
-        </g>
-        <g class="n-street">
-          <text x="210" y="206" text-anchor="middle" font-family="'Bodoni Moda', Didot, serif" font-style="italic" font-weight="700" font-size="32" fill="var(--v-neon, #E0446E)" filter="var(--v-filter, url(#f-neon))">street</text>
-          <text x="210" y="206" text-anchor="middle" font-family="'Bodoni Moda', Didot, serif" font-style="italic" font-weight="700" font-size="32" fill="var(--v-tube, #FFC2D3)">street</text>
-        </g>
-        <g stroke="var(--v-gold, url(#g-gold))" stroke-width="1.2" fill="none"><path d="M160 196 C145 196 135 192 118 195"/><path d="M260 196 C275 196 285 192 302 195"/></g>
-        <g fill="var(--v-gold, url(#g-gold))"><path d="M110 195 l4 -4 l4 4 l-4 4z"/><path d="M302 195 l4 -4 l4 4 l-4 4z"/></g>
-      </g>
-      <use class="star" href="#star8" x="210" y="30" fill="var(--v-star, #FFE9B0)" stroke="var(--v-gold, url(#g-gold))" stroke-width="1.5" filter="var(--v-filter, url(#f-neon))"/>
-    </symbol>
-
-    <!-- 2. Logo semplificato: solo rombo e scritta, colori pieni, niente alone, lampadine, dadi, stella e pali -->
-    <symbol id="simple" viewBox="10 30 400 240">
-      <path d="M18 150 L120 48 Q210 34 300 48 L402 150 L300 252 Q210 266 120 252 Z" fill="var(--s-bg, #4A1530)" stroke="var(--s-line, #E7C98B)" stroke-width="5"/>
-      <text x="210" y="172" text-anchor="middle" font-family="Anton, Impact, sans-serif" font-size="84" letter-spacing="5" fill="var(--s-fg, #FFFFFF)">STRIP</text>
-      <text x="210" y="216" text-anchor="middle" font-family="'Bodoni Moda', Didot, serif" font-style="italic" font-weight="700" font-size="38" fill="var(--s-accent, #E0446E)">street</text>
-    </symbol>
-
-    <!-- 3. Logotipo orizzontale: solo scritta, per barre e intestazioni -->
-    <symbol id="word" viewBox="0 0 330 80">
-      <use href="#star8" x="22" y="40" transform="scale(.8)" style="transform-origin:22px 40px" fill="var(--w-star, #E7C98B)"/>
-      <text x="48" y="62" font-family="Anton, Impact, sans-serif" font-size="60" letter-spacing="4" fill="var(--w-fg, #FFFFFF)">STRIP</text>
-      <text x="182" y="62" font-family="'Bodoni Moda', Didot, serif" font-style="italic" font-weight="700" font-size="46" fill="var(--w-accent, #E0446E)">street</text>
-    </symbol>
-
-    <!-- 4. Simbolo: favicon e icona app -->
-    <symbol id="mark" viewBox="0 0 64 64">
-      <path d="M2 34 L18 16 Q32 13 46 16 L62 34 L46 52 Q32 55 18 52 Z" fill="var(--m-bg, #4A1530)" stroke="var(--m-line, #E7C98B)" stroke-width="2.5"/>
-      <text x="32" y="46" text-anchor="middle" font-family="Anton, Impact, sans-serif" font-size="28" fill="var(--m-fg, #FFFFFF)">S</text>
-      <!-- stella centrata sulla cornice superiore (y 14.5 = punto più alto della curva) -->
-      <path transform="translate(32 14.5)" d="M0 -8 L1.5 -2.5 L6 -5 L2.5 -1 L8 0 L2.5 1 L6 5 L1.5 2.5 L0 8 L-1.5 2.5 L-6 5 L-2.5 1 L-8 0 L-2.5 -1 L-6 -5 L-1.5 -2.5Z" fill="var(--m-star, #FFE9B0)"/>
-    </symbol>
-  </defs>
-</svg>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <g id="die"><rect x="-17" y="-17" width="40" height="40" rx="9" fill="#1A0F17"/><rect x="-20" y="-20" width="40" height="40" rx="9" fill="#FFF8EC" stroke="#1A0F17" stroke-width="3"/>
+    <g fill="#1A0F17"><circle cx="-9" cy="-9" r="3.6"/><circle cx="9" cy="-9" r="3.6"/><circle cx="0" cy="0" r="3.6"/><circle cx="-9" cy="9" r="3.6"/><circle cx="9" cy="9" r="3.6"/></g></g>
+</defs></svg>
 
 <div class="wrap">
   <header>
-    <div class="eyebrow">Manuale del brand · v1 · novembre 2026</div>
+    <div class="eyebrow">Manuale del brand · v2 · novembre 2026</div>
     <h1>Strip <em>Street</em></h1>
-    <p class="lead">Strip Street è un gioco da tavolo per coppie: un'insegna da Las Vegas accesa sulla casella 40 del tabellone. Questo manuale dice come usare logo, colori, caratteri e movimento nell'app e in tutto quello che ci gira intorno.</p>
-    <div class="hero anim-vegas" data-anim="anim-vegas">
-      <svg viewBox="0 -14 420 314" role="img" aria-label="Logo Strip Street, insegna completa"><use href="#vegas" x="0" y="-14" width="420" height="314"/></svg>
+    <p class="lead">Strip Street è un gioco da tavolo per coppie. Il marchio è l'insegna della casella 40, disegnata come una pedina del tabellone: colori pieni, contorno d'inchiostro, ombra piena. Questo manuale dice come usare logo, colori, caratteri e movimento nell'app, nelle stampe e in tutto quello che ci gira intorno.</p>
+    <div class="hero table">
+      <div class="logo play" id="hero-logo"><img src="export/insegna.svg" alt="Logo Strip Street, insegna completa"></div>
       <button class="replay" type="button">Riaccendi l'insegna</button>
     </div>
     <nav class="toc" aria-label="Capitoli">
       <a href="#logo">Logo e versioni</a><a href="#declinazioni">Declinazioni</a><a href="#spazio">Spazio e misure</a><a href="#errori">Usi scorretti</a>
-      <a href="#colori">Colori</a><a href="#caratteri">Caratteri</a><a href="#icone">Favicon e icona</a><a href="#movimento">Movimento</a><a href="#tono">Tono di voce</a><a href="#token">Token CSS</a>
+      <a href="#colori">Colori</a><a href="#caratteri">Caratteri</a><a href="#stile">Stile grafico</a><a href="#icone">Favicon e icona</a>
+      <a href="#movimento">Movimento</a><a href="#tono">Tono di voce</a><a href="#token">Token CSS</a>
     </nav>
   </header>
 
   <section id="logo">
     <h2>Logo e versioni <small>quattro forme, un'insegna</small></h2>
-    <p class="rule">Si usa <b>sempre la versione più ricca che lo spazio permette</b>. L'insegna completa è per schermata iniziale, fine partita e materiali promozionali. Sotto i 200 px di larghezza si passa alla semplificata, nelle barre al logotipo orizzontale, sotto i 48 px al simbolo.</p>
+    <p class="rule">Si usa <b>sempre la versione più ricca che lo spazio permette</b>. L'insegna completa va su schermata iniziale, fine partita e materiali promozionali. Sotto i 200 px di larghezza si passa alla semplificata, nelle barre e sul tabellone al logotipo orizzontale, sotto i 48 px al simbolo.</p>
     <div class="grid two">
-      <div class="tile"><span class="tag main">Principale</span><h3>1 · Insegna completa</h3><svg viewBox="0 -14 420 314"><use href="#vegas" x="0" y="-14" width="420" height="314"/></svg><p>Lampadine, stella, dadi, neon. Animata all'apertura dell'app.</p></div>
-      <div class="tile"><span class="tag alt">Semplificata</span><h3>2 · Insegna semplificata</h3><svg viewBox="10 30 400 240"><use href="#simple" x="10" y="30" width="400" height="240"/></svg><p>Solo rombo e scritta, colori pieni. Per stampa, adesivi, dimensioni piccole, sfondi chiari.</p></div>
-      <div class="tile"><span class="tag alt">Orizzontale</span><h3>3 · Logotipo</h3><svg viewBox="0 0 330 80"><use href="#word" width="330" height="80"/></svg><p>Solo scritta con la stella. Per l'intestazione del tabellone e le barre.</p></div>
-      <div class="tile"><span class="tag alt">Simbolo</span><h3>4 · Marchio</h3><svg viewBox="0 0 64 64"><use href="#mark" width="64" height="64"/></svg><p>Rombo con la S e la stella sulla cornice. Per favicon, icona app, pedina, timbro.</p></div>
+      <div class="tile"><span class="tag">Principale</span><h3>1 · Insegna completa</h3><img src="export/insegna.svg" alt="Insegna completa"><p>Cornice di lampadine, stella, dadi, palo. Animata all'apertura dell'app.</p></div>
+      <div class="tile"><span class="tag alt">Semplificata</span><h3>2 · Insegna semplificata</h3><img src="export/semplificato.svg" alt="Insegna semplificata"><p>Solo rombo e scritta. Per stampa, adesivi, dimensioni piccole.</p></div>
+      <div class="tile"><span class="tag alt">Orizzontale</span><h3>3 · Logotipo</h3><img src="export/logotipo.svg" alt="Logotipo"><p>Stella e scritta su una riga. Per il centro del tabellone, le barre e le intestazioni.</p></div>
+      <div class="tile"><span class="tag alt">Simbolo</span><h3>4 · Marchio</h3><img src="export/simbolo.svg" alt="Simbolo"><p>Rombo con la S e la stella sulla cornice. Per favicon, icona app, timbri.</p></div>
     </div>
   </section>
 
   <section id="declinazioni">
-    <h2>Declinazioni <small>fondi e colori ammessi</small></h2>
-    <p class="rule">Il fondo naturale del marchio è la <b>notte</b>. Su fondi chiari e sul rosa si usa la versione semplificata; il monocromo serve per stampa a un colore, incisioni e timbri.</p>
+    <h2>Declinazioni <small>fondi ammessi</small></h2>
+    <p class="rule">Il contorno d'inchiostro fa reggere il marchio sia sulla <b>carta crema</b> sia sul <b>velluto del tavolo</b>: la stessa versione a colori va bene su entrambi. Il monocromo serve per stampa a un colore, incisioni e timbri.</p>
     <div class="grid">
-      <div class="tile"><h3>Completa su notte</h3><svg viewBox="0 -14 420 314"><use href="#vegas" x="0" y="-14" width="420" height="314"/></svg></div>
-      <div class="tile velvet"><h3>Completa su velluto</h3><svg viewBox="0 -14 420 314" style="--v-bg:#1A0F17"><use href="#vegas" x="0" y="-14" width="420" height="314"/></svg></div>
-      <div class="tile light"><h3>Semplificata su crema</h3><svg viewBox="10 30 400 240"><use href="#simple" x="10" y="30" width="400" height="240"/></svg></div>
-      <div class="tile rose"><h3>Semplificata su rosa</h3><svg viewBox="10 30 400 240" style="--s-bg:#1A0F17;--s-accent:#FF8FB0"><use href="#simple" x="10" y="30" width="400" height="240"/></svg></div>
-      <div class="tile"><h3>Monocromo chiaro</h3><svg viewBox="10 30 400 240" style="--s-bg:transparent;--s-line:#F6EEE9;--s-fg:#F6EEE9;--s-accent:#F6EEE9"><use href="#simple" x="10" y="30" width="400" height="240"/></svg></div>
-      <div class="tile light"><h3>Monocromo scuro</h3><svg viewBox="10 30 400 240" style="--s-bg:transparent;--s-line:#1A0F17;--s-fg:#1A0F17;--s-accent:#1A0F17"><use href="#simple" x="10" y="30" width="400" height="240"/></svg></div>
-      <div class="tile"><h3>Logotipo su notte</h3><svg viewBox="0 0 330 80"><use href="#word" width="330" height="80"/></svg></div>
-      <div class="tile light"><h3>Logotipo su crema</h3><svg viewBox="0 0 330 80" style="--w-fg:#1A0F17;--w-accent:#C42F5A;--w-star:#B8904A"><use href="#word" width="330" height="80"/></svg></div>
+      <div class="tile cream"><h3>Insegna su carta</h3><img src="export/insegna.svg" alt=""></div>
+      <div class="tile table"><h3>Insegna sul tavolo</h3><img src="export/insegna.svg" alt=""></div>
+      <div class="tile felt"><h3>Semplificata sul panno</h3><img src="export/semplificato.svg" alt=""></div>
+      <div class="tile"><h3>Monocromo inchiostro</h3><img src="export/semplificato-mono-scuro.svg" alt=""></div>
+      <div class="tile ink"><h3>Monocromo crema</h3><img src="export/semplificato-mono-chiaro.svg" alt=""></div>
+      <div class="tile cream"><h3>Logotipo su carta</h3><img src="export/logotipo.svg" alt=""></div>
+      <div class="tile table"><h3>Logotipo sul tavolo</h3><img src="export/logotipo.svg" alt=""></div>
     </div>
   </section>
 
   <section id="spazio">
     <h2>Spazio e misure minime</h2>
-    <p class="rule">Attorno al logo resta libero uno spazio pari ad <b>almeno l'altezza della S di STRIP</b> (x nello schema). Niente testo, bordi o immagini dentro quest'area.</p>
+    <p class="rule">Attorno al logo resta libero uno spazio pari ad <b>almeno l'altezza della S di STRIP</b> (x nello schema), ombra compresa. Niente testo, bordi o immagini dentro quest'area.</p>
     <div class="grid two">
-      <div class="tile"><h3>Area di rispetto</h3>
-        <div class="clear"><div class="box"><span class="x t">x</span><span class="x l">x</span><svg viewBox="10 30 400 240"><use href="#simple" x="10" y="30" width="400" height="240"/></svg></div></div>
-      </div>
+      <div class="tile"><h3>Area di rispetto</h3><div class="clear"><div class="box"><span class="x t">x</span><span class="x l">x</span><img src="export/semplificato.svg" alt=""></div></div></div>
       <div class="tile"><h3>Larghezza minima</h3>
         <div class="sizes">
-          <figure><svg width="200" height="150" viewBox="0 -14 420 314"><use href="#vegas" x="0" y="-14" width="420" height="314"/></svg>completa 200 px</figure>
-          <figure><svg width="90" height="54" viewBox="10 30 400 240"><use href="#simple" x="10" y="30" width="400" height="240"/></svg>semplificata 90 px</figure>
-          <figure><svg width="120" height="25" viewBox="0 0 330 80"><use href="#word" width="330" height="80"/></svg>logotipo 120 px</figure>
-          <figure><svg width="16" height="16"><use href="#mark" width="16" height="16"/></svg>simbolo 16 px</figure>
+          <figure><img src="export/insegna.svg" width="200" alt="">insegna 200 px</figure>
+          <figure><img src="export/semplificato.svg" width="90" alt="">semplificata 90 px</figure>
+          <figure><img src="export/logotipo.svg" width="120" alt="">logotipo 120 px</figure>
+          <figure><img src="export/simbolo.svg" width="16" alt="">simbolo 16 px</figure>
         </div>
       </div>
     </div>
@@ -264,78 +219,92 @@ pre { margin: 0; background: var(--night-2); border: 1px solid var(--line); bord
 
   <section id="errori">
     <h2>Usi scorretti</h2>
-    <p class="rule">Il marchio non si deforma, non si ricolora fuori palette e non si appoggia su fondi che ne mangiano la lettura.</p>
+    <p class="rule">Il marchio non si deforma, non si ricolora fuori palette, non perde il contorno e non torna al neon: bagliori e sfumature appartengono al vecchio marchio.</p>
     <div class="grid">
-      <div class="tile dont"><span class="no" aria-hidden="true">✕</span><h3>Non deformare</h3><svg viewBox="10 30 400 240" preserveAspectRatio="none"><use href="#simple" x="10" y="30" width="400" height="240"/></svg></div>
-      <div class="tile dont"><span class="no" aria-hidden="true">✕</span><h3>Non cambiare colori</h3><svg viewBox="10 30 400 240" style="--s-bg:#1E5A2B;--s-line:#9AD0FF;--s-fg:#FFE04A;--s-accent:#7AE0FF"><use href="#simple" x="10" y="30" width="400" height="240"/></svg></div>
-      <div class="tile dont photo"><span class="no" aria-hidden="true">✕</span><h3>Non su fondi confusi</h3><svg viewBox="10 30 400 240" style="--s-bg:transparent;--s-line:#E7C98B"><use href="#simple" x="10" y="30" width="400" height="240"/></svg></div>
-      <div class="tile dont"><span class="no" aria-hidden="true">✕</span><h3>Non ruotare</h3><svg viewBox="10 30 400 240" style="transform:rotate(-12deg)"><use href="#simple" x="10" y="30" width="400" height="240"/></svg></div>
+      <div class="tile dont"><span class="no" aria-hidden="true">✕</span><h3>Non deformare</h3><img src="export/semplificato.svg" style="object-fit:fill" alt=""></div>
+      <div class="tile dont"><span class="no" aria-hidden="true">✕</span><h3>Non cambiare colori</h3><img src="export/semplificato.svg" style="filter:hue-rotate(150deg)" alt=""></div>
+      <div class="tile dont"><span class="no" aria-hidden="true">✕</span><h3>Niente alone neon</h3><img src="export/semplificato.svg" style="filter:drop-shadow(0 0 10px #FF8FB0) drop-shadow(0 0 22px #E0446E)" alt=""></div>
+      <div class="tile dont photo"><span class="no" aria-hidden="true">✕</span><h3>Non su fondi confusi</h3><img src="export/semplificato-mono-scuro.svg" alt=""></div>
+      <div class="tile dont"><span class="no" aria-hidden="true">✕</span><h3>Non ruotare</h3><img src="export/semplificato.svg" style="transform:rotate(-12deg)" alt=""></div>
     </div>
   </section>
 
   <section id="colori">
-    <h2>Colori <small>notte, velluto, neon</small></h2>
-    <p class="rule">Proporzioni indicative di una schermata: <b>tanta notte, un po' di velluto, il neon solo dove serve</b>. Rosa e acqua identificano i due giocatori e non si scambiano mai.</p>
-    <div class="ratio" aria-label="Proporzioni dei colori"><i style="flex:60;background:#1A0F17"></i><i style="flex:20;background:#4A1530"></i><i style="flex:8;background:#F6EEE9"></i><i style="flex:5;background:#E7C98B"></i><i style="flex:4;background:#E0446E"></i><i style="flex:3;background:#3FB8AF"></i></div>
+    <h2>Colori <small>carta, inchiostro, velluto</small></h2>
+    <p class="rule">Proporzioni indicative di una schermata: <b>tavolo di velluto, carte di carta crema, inchiostro per contorni e testo</b>, rosa e oro solo per accenti. Rosa e acqua identificano i due giocatori e non si scambiano mai.</p>
+    <div class="ratio" aria-label="Proporzioni dei colori"><i style="flex:40;background:#4A1530"></i><i style="flex:30;background:#FFF8EC"></i><i style="flex:12;background:#1A0F17"></i><i style="flex:7;background:#C8285A"></i><i style="flex:6;background:#F5C842"></i><i style="flex:5;background:#3FB8AF"></i></div>
     <div class="sw">
-      <div><i style="background:#1A0F17"></i><div><b>Notte</b>fondo principale<br><code>#1A0F17 · 26 15 23</code></div></div>
-      <div><i style="background:#4A1530"></i><div><b>Velluto</b>pannelli, carte, insegna<br><code>#4A1530 · 74 21 48</code></div></div>
-      <div><i style="background:#E0446E"></i><div><b>Rosa neon</b>accento, giocatore 1<br><code>#E0446E · 224 68 110</code></div></div>
-      <div><i style="background:#3FB8AF"></i><div><b>Acqua</b>giocatore 2<br><code>#3FB8AF · 63 184 175</code></div></div>
-      <div><i style="background:#E7C98B"></i><div><b>Champagne</b>cornici, soldi, dettagli<br><code>#E7C98B · 231 201 139</code></div></div>
-      <div><i style="background:#FFE9B0"></i><div><b>Lampadina</b>luci, stella, evidenza<br><code>#FFE9B0 · 255 233 176</code></div></div>
-      <div><i style="background:#FF8FB0"></i><div><b>Alone</b>solo per il bagliore neon<br><code>#FF8FB0 · 255 143 176</code></div></div>
-      <div><i style="background:#F6EEE9"></i><div><b>Crema</b>testo, fondo chiaro<br><code>#F6EEE9 · 246 238 233</code></div></div>
+      <div><i style="background:#1A0F17"></i><div><b>Inchiostro</b>contorni, ombre, testo<br><code>#1A0F17</code></div></div>
+      <div><i style="background:#FFF8EC"></i><div><b>Carta</b>carte, pannelli, lettere<br><code>#FFF8EC</code></div></div>
+      <div><i style="background:#F3E8D4"></i><div><b>Carta antica</b>fondi secondari<br><code>#F3E8D4</code></div></div>
+      <div><i style="background:#4A1530"></i><div><b>Velluto</b>il tavolo<br><code>#4A1530</code></div></div>
+      <div><i style="background:#C8285A"></i><div><b>Rosa scuro</b>insegna, bottone principale<br><code>#C8285A</code></div></div>
+      <div><i style="background:#E0446E"></i><div><b>Rosa</b>giocatore 1, "street"<br><code>#E0446E</code></div></div>
+      <div><i style="background:#3FB8AF"></i><div><b>Acqua</b>giocatore 2<br><code>#3FB8AF</code></div></div>
+      <div><i style="background:#F5C842"></i><div><b>Oro</b>cornice, stella, soldi<br><code>#F5C842</code></div></div>
+      <div><i style="background:#CDE9D4"></i><div><b>Panno</b>centro del tabellone<br><code>#CDE9D4</code></div></div>
     </div>
     <h3>Colori delle proprietà sul tabellone</h3>
     <div class="board">
-      <div style="background:#8B5A2B">Marrone</div><div style="background:#4FA8D8">Azzurro</div><div style="background:#D9497A">Rosa</div><div style="background:#E8821A">Arancione</div>
-      <div style="background:#C62E2E">Rosso</div><div style="background:#C9A80E">Giallo</div><div style="background:#2E8B57">Verde</div><div style="background:#2A4BA8">Blu</div>
+      <div><i style="background:#955436"></i>Marrone</div><div><i style="background:#AAE0FA"></i>Azzurro</div><div><i style="background:#D93A96"></i>Rosa</div>
+      <div><i style="background:#F7941D"></i>Arancione</div><div><i style="background:#ED1B24"></i>Rosso</div><div><i style="background:#FEF200"></i>Giallo</div>
+      <div><i style="background:#1FB25A"></i>Verde</div><div><i style="background:#0072BB"></i>Blu</div><div><i style="background:#B48EE0"></i>Stanze</div>
     </div>
-    <p class="rule">Sono i colori classici del gioco, un po' più scuri e meno saturi perché stiano sul fondo notte. Si usano solo per le caselle e le carte proprietà, mai per l'interfaccia.</p>
+    <p class="rule">I colori classici del gioco, pieni e saturi, sempre separati dal resto da un contorno d'inchiostro. Si usano solo per caselle e carte proprietà, mai per l'interfaccia.</p>
   </section>
 
   <section id="caratteri">
-    <h2>Caratteri <small>insegna, seduzione, lettura</small></h2>
-    <p class="rule">Tre famiglie, tutte gratuite su Google Fonts. <b>Anton</b> parla forte come un'insegna, <b>Bodoni Moda corsivo</b> aggiunge il tocco sensuale, <b>Outfit</b> fa leggere tutto il resto. Il corsivo si usa con parsimonia: una parola, un titolo di sfida, mai un paragrafo.</p>
-    <div class="grid">
-      <div class="font"><h3>Display</h3><p class="s-anton">Tocca a te</p><span class="spec">Anton 400 · maiuscolo · spaziatura +3%</span><p class="rule">Titoli, nomi delle caselle, numeri del timer e dei soldi.</p></div>
-      <div class="font"><h3>Accento</h3><p class="s-bodoni">Mani di Velluto</p><span class="spec">Bodoni Moda corsivo 500/700</span><p class="rule">Titoli delle sfide, parole chiave, "street".</p></div>
-      <div class="font"><h3>Testo</h3><p class="s-outfit">Guardatevi negli occhi per 30 secondi.</p><span class="spec">Outfit 300/400/600</span><p class="rule">Testi delle carte, bottoni, cronaca, regole.</p></div>
+    <h2>Caratteri <small>due famiglie</small></h2>
+    <p class="rule">Entrambe gratuite su Google Fonts. <b>Lilita One</b> è tonda e grassa come le scritte di una scatola da gioco; <b>Inter</b> fa leggere tutto il resto. Nel logo le lettere sono convertite in tracciati, quindi il marchio non dipende dal font installato.</p>
+    <div class="grid two">
+      <div class="tile font"><h3>Display</h3><p class="s-display">Tocca a te!</p><span class="spec">Lilita One 400</span><p>Titoli, nomi delle caselle e delle carte, numeri del timer e dei soldi, logo.</p></div>
+      <div class="tile font"><h3>Testo</h3><p class="s-body">Guardatevi negli occhi per 30 secondi.</p><span class="spec">Inter 400 / 500 / 600 / 700</span><p>Testi delle sfide, bottoni, cronaca, regole.</p></div>
     </div>
     <div class="scale">
-      <div><code>Display XL · 64</code><p style="font:400 64px/1 var(--f-display);text-transform:uppercase">Bancarotta</p></div>
-      <div><code>Display L · 40</code><p style="font:400 40px/1 var(--f-display);text-transform:uppercase">Prigione</p></div>
-      <div><code>Accento · 32</code><p style="font:italic 700 32px/1.1 var(--f-script);color:var(--rose)">Sussurro Audace</p></div>
-      <div><code>Titolo · 20</code><p style="font:600 20px/1.3 var(--f-body)">Esegue: Giulia · durata ×2</p></div>
-      <div><code>Testo · 16</code><p style="font:300 16px/1.55 var(--f-body)">Dì qualcosa di ammiccante all'orecchio del partner.</p></div>
-      <div><code>Etichetta · 12</code><p style="font:600 12px/1 var(--f-body);letter-spacing:.16em;text-transform:uppercase;color:var(--gold)">Affitto 80 €</p></div>
+      <div><code>Display XL · 64</code><p style="font:400 64px/1 var(--display)">Bancarotta</p></div>
+      <div><code>Display L · 40</code><p style="font:400 40px/1 var(--display)">Prigione</p></div>
+      <div><code>Display M · 26</code><p style="font:400 26px/1.1 var(--display);color:var(--rose-deep)">Sussurro Audace</p></div>
+      <div><code>Titolo · 18</code><p style="font:600 18px/1.3 var(--font)">Esegue: Giulia · durata ×2</p></div>
+      <div><code>Testo · 16</code><p style="font:400 16px/1.55 var(--font)">Dì qualcosa di ammiccante all'orecchio del partner.</p></div>
+      <div><code>Etichetta · 12</code><p style="font:700 12px/1 var(--font);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)">Affitto 80 €</p></div>
+    </div>
+  </section>
+
+  <section id="stile">
+    <h2>Stile grafico <small>pezzi di un gioco vero</small></h2>
+    <p class="rule">Ogni elemento sembra un pezzo stampato e ritagliato: <b>contorno d'inchiostro di 2 px, ombra piena spostata in basso a destra, niente sfocature</b>. Le icone sono "adesivi": il tratto d'inchiostro sopra una sagoma colorata spostata di lato. I bottoni si schiacciano quando li premi.</p>
+    <div class="grid">
+      <div class="tile cream"><h3>Bottoni</h3><div class="demo-row"><span class="btn primary">Tira i dadi</span><span class="btn">Passa</span></div><p>Ombra 3 px; al clic scende di 3 px e l'ombra sparisce.</p></div>
+      <div class="tile felt"><h3>Carta proprietà</h3><div class="demo-row"><div class="prop"><div class="band" style="background:#ED1B24"></div><b>Cambio Look</b><span>220 €</span></div><div class="prop"><div class="band" style="background:#0072BB"></div><b>Il Premio Finale</b><span>400 €</span></div></div><p>Fascia colore in alto, titolo Lilita, prezzo Inter.</p></div>
+      <div class="tile cream"><h3>Adesivi e pedine</h3><div class="demo-row">
+        <span class="sticker"><svg viewBox="-2 -2 28 28" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><g class="fill" transform="translate(1.4 1.4)" stroke-width="4.5"><path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"/></g><g class="ink" stroke-width="2"><path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"/></g></svg></span>
+        <span class="chip"><i style="background:#E0446E"></i>Giulia</span><span class="chip"><i style="background:#3FB8AF"></i>Marco</span></div><p>Icone Lucide ripassate due volte; pedine rosa e acqua.</p></div>
     </div>
   </section>
 
   <section id="icone">
     <h2>Favicon e icona app</h2>
-    <p class="rule">Il simbolo funziona da solo da <b>16 px</b> in su. Per l'icona dell'app si mette su fondo notte con angoli arrotondati, senza alone neon (a quelle misure diventa una macchia).</p>
+    <p class="rule">Il simbolo funziona da solo da <b>16 px</b> in su. Per l'icona dell'app si mette su una piastra oro con gli angoli arrotondati: così si distingue in mezzo alle altre icone del telefono.</p>
     <div class="sizes">
-      <figure><svg width="16" height="16"><use href="#mark" width="16" height="16"/></svg>16</figure>
-      <figure><svg width="32" height="32"><use href="#mark" width="32" height="32"/></svg>32</figure>
-      <figure><svg width="48" height="48"><use href="#mark" width="48" height="48"/></svg>48</figure>
-      <figure><svg width="96" height="96" style="background:#1A0F17;border-radius:22%"><use href="#mark" x="10" y="10" width="76" height="76"/></svg>180 iOS</figure>
-      <figure><svg width="120" height="120" style="background:#1A0F17;border-radius:50%"><use href="#mark" x="22" y="22" width="76" height="76"/></svg>512 Android</figure>
-      <figure><span class="tab" style="display:inline-flex;gap:.5rem;align-items:center;background:#2A1C25;border-radius:8px 8px 0 0;padding:.45rem .8rem;font:400 .8rem var(--f-body);color:var(--cream)"><svg width="16" height="16"><use href="#mark" width="16" height="16"/></svg>Strip Street</span>scheda del browser</figure>
+      <figure><img src="export/simbolo.svg" width="16" height="16" alt="">16</figure>
+      <figure><img src="export/simbolo.svg" width="32" height="32" alt="">32</figure>
+      <figure><img src="export/simbolo.svg" width="48" height="48" alt="">48</figure>
+      <figure><img src="export/icona-app.svg" width="96" height="96" style="border-radius:22%" alt="">180 iOS</figure>
+      <figure><img src="export/icona-app.svg" width="120" height="120" style="border-radius:50%" alt="">512 Android</figure>
+      <figure><span style="display:inline-flex;gap:.5rem;align-items:center;background:#fff;border:var(--stroke);border-bottom:0;border-radius:8px 8px 0 0;padding:.45rem .8rem;font:500 .8rem var(--font)"><img src="export/simbolo.svg" width="16" height="16" alt="">Strip Street</span>scheda del browser</figure>
     </div>
   </section>
 
   <section id="movimento" class="motion">
-    <h2>Movimento <small>pochi gesti, sempre gli stessi</small></h2>
-    <p class="rule">Il movimento ha due caratteri: <b>neon</b> (si accende a scatti, tremola) e <b>gioco</b> (rimbalza, rotola). Con "riduci movimento" attivo nel sistema tutto diventa una dissolvenza breve.</p>
+    <h2>Movimento <small>rimbalza, rotola, si schiaccia</small></h2>
+    <p class="rule">Tutto si muove come un oggetto fisico sul tavolo: <b>arriva con un piccolo rimbalzo</b> (curva "pop") e non dissolve mai lentamente. Con "riduci movimento" attivo nel sistema le animazioni si spengono.</p>
     <div class="grid">
-      <div class="tile"><h3>Dado</h3><div class="demo"><svg class="pill" viewBox="-22 -22 44 44"><g class="d-roll"><use href="#die5"/></g></svg></div><code>1200 ms · ease-out morbido</code><p>Rotola e si ferma inclinato.</p></div>
-      <div class="tile"><h3>Carta</h3><div class="demo" style="perspective:400px"><div class="d-flip" style="width:52px;height:74px;border-radius:6px;background:#4A1530;border:2px solid #E7C98B"></div></div><code>900 ms · pop</code><p>Si gira dal mazzo; il titolo compare dopo il giro.</p></div>
-      <div class="tile"><h3>Pedina</h3><div class="demo"><span class="d-hop" style="width:22px;height:22px;border-radius:50%;background:#E0446E;display:block"></span></div><code>450 ms a casella · pop</code><p>Salta casella per casella, non scivola.</p></div>
-      <div class="tile"><h3>Indumento tolto</h3><div class="demo"><span class="d-away" style="font:400 1.6rem var(--f-display);color:#E7C98B">−1</span></div><code>1200 ms · ease-in</code><p>Vola via dal contatore del giocatore.</p></div>
-      <div class="tile"><h3>Timer, ultimi 5 secondi</h3><div class="demo"><svg width="64" height="64" viewBox="0 0 64 64"><circle cx="32" cy="32" r="26" fill="none" stroke="#3A2531" stroke-width="6"/><circle class="d-pulse" cx="32" cy="32" r="26" fill="none" stroke="#E0446E" stroke-width="6" stroke-dasharray="163" stroke-dashoffset="130" transform="rotate(-90 32 32)"/></svg></div><code>500 ms · pulsazione</code><p>Anello che si svuota, pulsa in rosa alla fine.</p></div>
-      <div class="tile"><h3>Insegna</h3><div class="demo"><span style="font:400 1.8rem var(--f-display);color:#fff;text-shadow:0 0 12px #FF8FB0;animation:flicker 2s steps(1) infinite">STRIP</span></div><code>2000 ms · a scatti</code><p>All'avvio e a fine partita, mai durante il gioco.</p></div>
+      <div class="tile"><h3>Dado</h3><div class="demo"><svg width="48" height="48" viewBox="-24 -24 48 48"><g class="d-roll"><use href="#die"/></g></svg></div><code>1200 ms · ease-out morbido</code><p>Rotola e si ferma inclinato.</p></div>
+      <div class="tile"><h3>Carta</h3><div class="demo" style="perspective:400px"><div class="d-flip" style="width:54px;height:76px;border-radius:8px;background:linear-gradient(var(--rose-deep) 0 14px, var(--ink) 14px 16px, var(--paper) 16px);border:var(--stroke);box-shadow:3px 3px 0 var(--ink)"></div></div><code>900 ms · pop</code><p>Si gira dal mazzo; il titolo compare dopo il giro.</p></div>
+      <div class="tile"><h3>Pedina</h3><div class="demo"><span class="d-hop" style="width:24px;height:24px;border-radius:50%;background:var(--rose);border:var(--stroke);box-shadow:2px 2px 0 var(--ink);display:block"></span></div><code>450 ms a casella · pop</code><p>Salta casella per casella, non scivola.</p></div>
+      <div class="tile"><h3>Bottone</h3><div class="demo"><span class="btn primary d-press">Compra</span></div><code>100 ms · si schiaccia</code><p>Scende sull'ombra quando lo premi.</p></div>
+      <div class="tile"><h3>Indumento tolto</h3><div class="demo"><span class="d-away" style="font:400 1.8rem var(--display);color:var(--rose-deep)">−1</span></div><code>1200 ms · ease-in</code><p>Vola via dal contatore del giocatore.</p></div>
+      <div class="tile"><h3>Insegna</h3><div class="demo"><span class="d-stamp" style="display:inline-block;font:400 2rem var(--display);color:var(--paper);-webkit-text-stroke:5px var(--ink);paint-order:stroke;text-shadow:3px 3px 0 var(--ink)">STRIP</span></div><code>450 ms · timbro</code><p>Le scritte arrivano come un timbro. Solo all'avvio e a fine partita.</p></div>
     </div>
   </section>
 
@@ -351,49 +320,36 @@ pre { margin: 0; background: var(--night-2); border: 1px solid var(--line); bord
   </section>
 
   <section id="token">
-    <h2>Token CSS <small>da incollare nell'app</small></h2>
+    <h2>Token CSS <small>gli stessi di src/style.css</small></h2>
     <pre><code>:root {
-  /* colori */
-  --ss-night: #1A0F17;  --ss-velvet: #4A1530;  --ss-cream: #F6EEE9;
-  --ss-rose: #E0446E;   --ss-teal: #3FB8AF;    --ss-gold: #E7C98B;
-  --ss-bulb: #FFE9B0;   --ss-glow: #FF8FB0;
+  /* marchio e tavolo */
+  --ink: #1A0F17;     --paper: #FFF8EC;   --paper-2: #F3E8D4;
+  --velvet: #4A1530;  --felt: #CDE9D4;
+  --rose: #E0446E;    --rose-deep: #C8285A;
+  --teal: #3FB8AF;    --gold: #F5C842;
   /* proprietà */
-  --ss-marrone: #8B5A2B; --ss-azzurro: #4FA8D8; --ss-rosa: #D9497A; --ss-arancione: #E8821A;
-  --ss-rosso: #C62E2E;   --ss-giallo: #C9A80E;  --ss-verde: #2E8B57; --ss-blu: #2A4BA8;
+  --marrone: #955436; --azzurro: #AAE0FA; --rosa: #D93A96;  --arancione: #F7941D;
+  --rosso: #ED1B24;   --giallo: #FEF200;  --verde: #1FB25A; --blu: #0072BB; --stanza: #B48EE0;
+  /* pezzi del gioco */
+  --stroke: 2px solid var(--ink);
+  --hard: 4px 4px 0 var(--ink);   --hard-sm: 2px 2px 0 var(--ink);
+  --radius: 12px;
   /* caratteri */
-  --ss-display: "Anton", Impact, sans-serif;
-  --ss-script: "Bodoni Moda", Didot, serif;   /* sempre italic */
-  --ss-body: "Outfit", system-ui, sans-serif;
+  --display: 'Lilita One', 'Arial Rounded MT Bold', system-ui, sans-serif;
+  --font: 'Inter', system-ui, sans-serif;
   /* movimento */
-  --ss-pop: cubic-bezier(.3, 1.5, .5, 1);
-  --ss-soft: cubic-bezier(.2, .8, .25, 1);
-  --ss-fast: 200ms; --ss-mid: 450ms; --ss-slow: 1200ms;
-  /* neon */
-  --ss-neon-glow: 0 0 6px var(--ss-glow), 0 0 18px var(--ss-rose);
+  --pop: cubic-bezier(.3, 1.5, .5, 1);
 }</code></pre>
   </section>
 </div>
 
 <script>
-// var() nei presentation attribute non è garantito: li sposto nello style inline, dove funziona sempre
-document.querySelectorAll('defs [fill*="var("], defs [stroke*="var("], defs [filter*="var("]').forEach(el => {
-  for (const a of ['fill', 'stroke', 'filter']) {
-    const v = el.getAttribute(a);
-    if (v && v.includes('var(')) { el.style.setProperty(a, v); el.removeAttribute(a); }
-  }
+// L'insegna in testa va inserita inline perché le animazioni CSS la raggiungano; se il file non si legge resta l'immagine.
+const hero = document.getElementById('hero-logo');
+fetch('export/insegna.svg').then(r => r.ok ? r.text() : Promise.reject()).then(svg => { hero.innerHTML = svg; }).catch(() => {});
+document.querySelector('.replay').addEventListener('click', () => {
+  hero.classList.remove('play'); void hero.offsetWidth; hero.classList.add('play');
 });
-// nell'insegna animata copio il simbolo dentro l'svg (le animazioni CSS non entrano nell'ombra di <use>)
-document.querySelectorAll('.hero svg > use').forEach(u => {
-  const sym = document.querySelector(u.getAttribute('href'));
-  const s = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-  for (const a of ['x', 'y', 'width', 'height']) if (u.hasAttribute(a)) s.setAttribute(a, u.getAttribute(a));
-  s.setAttribute('viewBox', sym.getAttribute('viewBox'));
-  s.setAttribute('overflow', 'visible');
-  s.append(...[...sym.childNodes].map(n => n.cloneNode(true)));
-  u.replaceWith(s);
-});
-document.querySelectorAll('.replay').forEach(b => b.addEventListener('click', () => {
-  const h = b.closest('.hero'), c = h.dataset.anim;
-  h.classList.remove(c); void h.offsetWidth; h.classList.add(c);
-}));
 </script>
+</body>
+</html>

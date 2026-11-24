@@ -1,14 +1,14 @@
 """Genera i file del marchio Strip Street (SVG con le scritte convertite in tracciati).
 
 Uso:  python brand/build.py
-Scrive brand/export/*.svg e public/favicon.svg. I font (OFL, da Google Fonts) stanno in brand/fonts/.
-Le geometrie sono le stesse del manuale brand/brand-board.html: se cambi una, cambia anche l'altra.
+Scrive brand/export/*.svg, public/favicon.svg e public/icona-app.svg. Font: Lilita One (OFL) in brand/fonts/.
+Stile "gioco da tavolo" come l'app: colori pieni, contorno d'inchiostro, ombra piena spostata, niente neon.
+Il manuale brand/brand-board.html mostra questi file: si cambia il logo solo qui.
 """
 import re
 from pathlib import Path
 from string import Template
 from fontTools.ttLib import TTFont
-from fontTools.varLib.instancer import instantiateVariableFont
 from fontTools.pens.svgPathPen import SVGPathPen
 from fontTools.pens.transformPen import TransformPen
 
@@ -16,50 +16,54 @@ ROOT = Path(__file__).resolve().parent
 OUT = ROOT / 'export'
 PUBLIC = ROOT.parent / 'public'
 
-# --- font ---------------------------------------------------------------
-def load(name, **axes):
-    f = TTFont(ROOT / 'fonts' / name)
-    return instantiateVariableFont(f, axes) if axes else f
+# Colori: gli stessi di src/style.css
+C = dict(ink='#1A0F17', paper='#FFF8EC', rose='#E0446E', deep='#C8285A', gold='#F5C842', velvet='#4A1530')
 
-FONTS = {
-    'Anton': load('Anton-Regular.ttf'),
-    'Bodoni': load('BodoniModa-Italic.ttf', wght=700, opsz=28),
-    'Outfit': load('Outfit.ttf', wght=600),
-}
+# --- testo in tracciati -------------------------------------------------
+FONT = TTFont(ROOT / 'fonts' / 'LilitaOne-Regular.ttf')
+GS, CMAP, HMTX = FONT.getGlyphSet(), FONT.getBestCmap(), FONT['hmtx']
+UPM = FONT['head'].unitsPerEm
+
+def width(text, size, ls=0):
+    return sum(HMTX[CMAP[ord(c)]][0] for c in text) * size / UPM + ls * (len(text) - 1)
 
 def outline(attrs, text):
     """<text> -> <path>: stessi x, y, text-anchor, font-size, letter-spacing; ignora la crenatura."""
-    fam = next(k for k in FONTS if k in attrs['font-family'])
-    font = FONTS[fam]
-    gs, cmap, hmtx = font.getGlyphSet(), font.getBestCmap(), font['hmtx']
     size = float(attrs['font-size'])
-    k = size / font['head'].unitsPerEm
+    k = size / UPM
     ls = float(attrs.get('letter-spacing', 0))
-    names = [cmap[ord(c)] for c in text]
-    width = sum(hmtx[n][0] * k + ls for n in names) - ls
-    x = float(attrs.get('x', 0)) - {'middle': width / 2, 'end': width}.get(attrs.get('text-anchor'), 0)
+    x = float(attrs.get('x', 0)) - {'middle': width(text, size, ls) / 2, 'end': width(text, size, ls)}.get(attrs.get('text-anchor'), 0)
     y = float(attrs.get('y', 0))
     d = []
-    for n in names:
-        pen = SVGPathPen(gs, ntos=lambda v: f"{v:.2f}".rstrip("0").rstrip("."))
-        gs[n].draw(TransformPen(pen, (k, 0, 0, -k, x, y)))
+    for ch in text:
+        n = CMAP[ord(ch)]
+        pen = SVGPathPen(GS, ntos=lambda v: f"{v:.2f}".rstrip("0").rstrip("."))
+        GS[n].draw(TransformPen(pen, (k, 0, 0, -k, x, y)))
         d.append(pen.getCommands())
-        x += hmtx[n][0] * k + ls
-    keep = ' '.join(f'{a}="{v}"' for a, v in attrs.items()
-                    if a not in ('x', 'y', 'text-anchor', 'font-family', 'font-size', 'letter-spacing', 'font-style', 'font-weight'))
+        x += HMTX[n][0] * k + ls
+    keep = ' '.join(f'{a}="{v}"' for a, v in attrs.items() if a not in ('x', 'y', 'text-anchor', 'font-size', 'letter-spacing'))
     return f'<path {keep} d="{" ".join(d)}"/>'
 
 ATTR = re.compile(r'([\w:-]+)="([^"]*)"')
 def outline_all(svg):
     return re.sub(r'<text ([^>]*)>([^<]*)</text>', lambda m: outline(dict(ATTR.findall(m[1])), m[2]), svg)
 
-# --- elementi comuni ----------------------------------------------------
-DEFS = '''<linearGradient id="$p-velvet" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5E1B3C"/><stop offset="1" stop-color="#33091F"/></linearGradient>
-<linearGradient id="$p-gold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F6E2AE"/><stop offset=".5" stop-color="#D8B26A"/><stop offset="1" stop-color="#F1D79A"/></linearGradient>
-<filter id="$p-neon" x="-20%" y="-50%" width="140%" height="200%"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-<path id="$p-star4" d="M0 -5 L1.3 -1.3 L5 0 L1.3 1.3 L0 5 L-1.3 1.3 L-5 0 L-1.3 -1.3Z"/>
-<path id="$p-star8" d="M0 -26 L4 -8 L16 -16 L8 -4 L26 0 L8 4 L16 16 L4 8 L0 26 L-4 8 L-16 16 L-8 4 L-26 0 L-8 -4 L-16 -16 L-4 -8Z"/>
-<g id="$p-die5"><rect x="-20" y="-20" width="40" height="40" rx="9" fill="#F6EEE9"/><g fill="#1A0F17"><circle cx="-9" cy="-9" r="3.6"/><circle cx="9" cy="-9" r="3.6"/><circle cx="0" cy="0" r="3.6"/><circle cx="-9" cy="9" r="3.6"/><circle cx="9" cy="9" r="3.6"/></g></g>'''
+def sticker(x, y, size, text, fill, stroke, sw, ls=0, shadow=0, anchor='middle'):
+    """Scritta "adesivo": ombra piena d'inchiostro spostata + riempimento con contorno d'inchiostro sotto."""
+    common = f'text-anchor="{anchor}" font-size="{size}" letter-spacing="{ls}" stroke-width="{sw}" stroke-linejoin="round" paint-order="stroke"'
+    sh = f'<text x="{x + shadow}" y="{y + shadow}" {common} fill="{stroke}" stroke="{stroke}">{text}</text>' if shadow else ''
+    return sh + f'<text x="{x}" y="{y}" {common} fill="{fill}" stroke="{stroke}">{text}</text>'
+
+# --- forme ---------------------------------------------------------------
+OUTER = 'M18 150 L120 48 Q210 34 300 48 L402 150 L300 252 Q210 266 120 252 Z'
+INNER = 'M46 150 L130 66 Q210 54 290 66 L374 150 L290 234 Q210 246 130 234 Z'
+STAR4 = 'M0 -6 L1.6 -1.6 L6 0 L1.6 1.6 L0 6 L-1.6 1.6 L-6 0 L-1.6 -1.6Z'
+STAR8 = 'M0 -26 L4 -8 L16 -16 L8 -4 L26 0 L8 4 L16 16 L4 8 L0 26 L-4 8 L-16 16 L-8 4 L-26 0 L-8 -4 L-16 -16 L-4 -8Z'
+MINI = 'M0 -8 L1.5 -2.5 L6 -5 L2.5 -1 L8 0 L2.5 1 L6 5 L1.5 2.5 L0 8 L-1.5 2.5 L-6 5 L-2.5 1 L-8 0 L-2.5 -1 L-6 -5 L-1.5 -2.5Z'
+DIE = ('<rect x="-17" y="-17" width="40" height="40" rx="9" fill="$ink"/>'
+       '<rect x="-20" y="-20" width="40" height="40" rx="9" fill="$paper" stroke="$ink" stroke-width="3"/>'
+       '<g fill="$ink"><circle cx="-9" cy="-9" r="3.6"/><circle cx="9" cy="-9" r="3.6"/><circle cx="0" cy="0" r="3.6"/>'
+       '<circle cx="-9" cy="9" r="3.6"/><circle cx="9" cy="9" r="3.6"/></g>')
 
 BULBS = [(32.0, 150.0), (45.3, 136.7), (58.5, 123.5), (72.0, 110.0), (85.2, 96.8), (98.5, 83.5), (112.0, 70.0), (125.4, 56.9),
          (144.1, 54.4), (162.8, 52.5), (181.5, 51.2), (200.2, 50.6), (219.3, 50.6), (238.1, 51.2), (256.8, 52.5), (275.4, 54.4),
@@ -67,71 +71,68 @@ BULBS = [(32.0, 150.0), (45.3, 136.7), (58.5, 123.5), (72.0, 110.0), (85.2, 96.8
          (374.7, 163.3), (361.5, 176.5), (348.0, 190.0), (334.8, 203.2), (321.5, 216.5), (308.0, 230.0), (294.6, 243.1), (275.9, 245.6),
          (257.2, 247.5), (238.5, 248.8), (219.8, 249.4), (200.7, 249.4), (181.9, 248.8), (163.2, 247.5), (144.6, 245.6), (125.9, 243.1),
          (112.2, 230.2), (98.7, 216.7), (85.5, 203.5), (72.2, 190.2), (58.7, 176.7), (45.5, 163.5)]
-BULB_SVG = ''.join(f'<circle cx="{x}" cy="{y}" r="3.4" style="--i:{i}"/>' for i, (x, y) in enumerate(BULBS))
+BULB_SVG = ''.join(f'<circle cx="{x}" cy="{y}" r="4" style="--i:{i}"/>' for i, (x, y) in enumerate(BULBS))
 
-SIGN = '''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -14 420 314" role="img" aria-label="Strip Street"><defs>''' + DEFS + '''</defs>
-<g fill="$gold"><rect x="176" y="250" width="10" height="50"/><rect x="234" y="250" width="10" height="50"/></g>
-<g class="sign">
-<path d="M18 150 L120 48 Q210 34 300 48 L402 150 L300 252 Q210 266 120 252 Z" fill="$bg" stroke="$gold" stroke-width="3"/>
-<path d="M46 150 L130 66 Q210 54 290 66 L374 150 L290 234 Q210 246 130 234 Z" fill="none" stroke="$gold" stroke-width="1.2"/>
-<g class="bulbs" fill="$bulb">''' + BULB_SVG + '''</g>
-<g fill="$gold"><use href="#$p-star4" x="122" y="96"/><use href="#$p-star4" x="298" y="96"/></g>
-<text x="210" y="100" text-anchor="middle" font-family="Outfit" font-size="11" letter-spacing="3.5" fill="$gold">CASELLA N° 40</text>
-<g class="dice" opacity="$dice"><g transform="translate(94 150) rotate(-14)"><use href="#$p-die5"/></g><g transform="translate(326 150) rotate(16)"><use href="#$p-die5"/></g></g>
-<g class="n-strip"><text x="210" y="168" text-anchor="middle" font-family="Anton" font-size="66" letter-spacing="5" fill="$glow" filter="$filter">STRIP</text><text x="210" y="168" text-anchor="middle" font-family="Anton" font-size="66" letter-spacing="5" fill="$white">STRIP</text></g>
-<g class="n-street"><text x="210" y="206" text-anchor="middle" font-family="Bodoni" font-size="32" fill="$neon" filter="$filter">street</text><text x="210" y="206" text-anchor="middle" font-family="Bodoni" font-size="32" fill="$tube">street</text></g>
-<g stroke="$gold" stroke-width="1.2" fill="none"><path d="M160 196 C145 196 135 192 118 195"/><path d="M260 196 C275 196 285 192 302 195"/></g>
-<g fill="$gold"><path d="M110 195 l4 -4 l4 4 l-4 4z"/><path d="M302 195 l4 -4 l4 4 l-4 4z"/></g>
-</g>
-<use class="star" href="#$p-star8" x="210" y="30" fill="$star" stroke="$gold" stroke-width="1.5" filter="$filter"/>
-</svg>'''
+# 1. Insegna completa: rombo-insegna sul palo, cornice di lampadine, dadi, stella. Classi usate dalle animazioni dell'app.
+sw = width('street', 36) / 2
+SIGN = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -14 420 314" role="img" aria-label="Strip Street">'
+  '<g fill="$gold" stroke="$ink" stroke-width="3"><rect x="176" y="240" width="12" height="58"/><rect x="232" y="240" width="12" height="58"/></g>'
+  '<g class="sign">'
+  f'<path d="{OUTER}" transform="translate(8 8)" fill="$ink"/>'
+  f'<path d="{OUTER}" fill="$gold" stroke="$ink" stroke-width="5" stroke-linejoin="round"/>'
+  f'<path d="{INNER}" fill="$deep" stroke="$ink" stroke-width="4" stroke-linejoin="round"/>'
+  '<g class="bulbs" fill="$paper" stroke="$ink" stroke-width="1.6">' + BULB_SVG + '</g>'
+  f'<g fill="$gold" stroke="$ink" stroke-width="1.2"><path transform="translate(124 100)" d="{STAR4}"/><path transform="translate(296 100)" d="{STAR4}"/></g>'
+  '<text x="210" y="104" text-anchor="middle" font-size="14" letter-spacing="2.5" fill="$gold">CASELLA N° 40</text>'
+  '<g class="dice"><g transform="translate(92 150) rotate(-14)"><use href="#$p-die"/></g><g transform="translate(328 150) rotate(16)"><use href="#$p-die"/></g></g>'
+  '<g class="n-strip">' + sticker(210, 172, 62, 'STRIP', '$paper', '$ink', 7, ls=2, shadow=4) + '</g>'
+  '<g class="n-street">' + sticker(210, 214, 36, 'street', '$gold', '$ink', 6, shadow=3) + '</g>'
+  f'<g fill="$paper" stroke="$ink" stroke-width="1.6"><path transform="translate({210 - sw - 18:.1f} 201)" d="{STAR4}"/><path transform="translate({210 + sw + 18:.1f} 201)" d="{STAR4}"/></g>'
+  '</g>'
+  f'<g class="star"><path transform="translate(214 34)" d="{STAR8}" fill="$ink"/><path transform="translate(210 30)" d="{STAR8}" fill="$gold" stroke="$ink" stroke-width="3" stroke-linejoin="round"/></g>'
+  '<defs><g id="$p-die">' + DIE + '</g></defs></svg>')
 
-SIMPLE = '''<svg xmlns="http://www.w3.org/2000/svg" viewBox="10 30 400 240" role="img" aria-label="Strip Street">
-<path d="M18 150 L120 48 Q210 34 300 48 L402 150 L300 252 Q210 266 120 252 Z" fill="$bg" stroke="$line" stroke-width="5"/>
-<text x="210" y="172" text-anchor="middle" font-family="Anton" font-size="84" letter-spacing="5" fill="$fg">STRIP</text>
-<text x="210" y="216" text-anchor="middle" font-family="Bodoni" font-size="38" fill="$accent">street</text>
-</svg>'''
+# 2. Semplificata: solo rombo e scritta. $shadow = "" toglie le ombre (versioni monocromo).
+SIMPLE = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="8 28 410 250" role="img" aria-label="Strip Street">'
+  f'<path d="{OUTER}" transform="translate(8 8)" fill="$shade"/>'
+  f'<path d="{OUTER}" fill="$bg" stroke="$ink" stroke-width="6" stroke-linejoin="round"/>'
+  + sticker(210, 174, 80, 'STRIP', '$fg', '$ink', '$sw', ls=2, shadow=5).replace('fill="$ink" stroke="$ink"', 'fill="$shade" stroke="$shade"', 1)
+  + sticker(210, 222, 42, 'street', '$accent', '$ink', '$sw') + '</svg>')
 
-WORD = '''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 330 80" role="img" aria-label="Strip Street"><defs>''' + DEFS + '''</defs>
-<use href="#$p-star8" transform="translate(22 40) scale(.8)" fill="$star"/>
-<text x="48" y="62" font-family="Anton" font-size="60" letter-spacing="4" fill="$fg">STRIP</text>
-<text x="182" y="62" font-family="Bodoni" font-size="46" fill="$accent">street</text>
-</svg>'''
+# 3. Logotipo orizzontale: stella + scritta su una riga. Contorno d'inchiostro = leggibile su carta e su velluto.
+wx = 56 + width('STRIP', 54, 2) + 12
+WORD = (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {wx + width("street", 42) + 10:.0f} 80" role="img" aria-label="Strip Street">'
+  f'<path transform="translate(26 42) scale(.82)" d="{STAR8}" fill="$ink"/><path transform="translate(23 39) scale(.82)" d="{STAR8}" fill="$gold" stroke="$ink" stroke-width="3.5" stroke-linejoin="round"/>'
+  + sticker(56, 62, 54, 'STRIP', '$paper', '$ink', 7, ls=2, shadow=4, anchor='start')
+  + sticker(round(wx, 1), 62, 42, 'street', '$rose', '$ink', 6, shadow=3, anchor='start') + '</svg>')
 
-MARK = '''<svg xmlns="http://www.w3.org/2000/svg" viewBox="$vb" role="img" aria-label="Strip Street">$plate
-<path d="M2 34 L18 16 Q32 13 46 16 L62 34 L46 52 Q32 55 18 52 Z" fill="#4A1530" stroke="#E7C98B" stroke-width="2.5"/>
-<text x="32" y="46" text-anchor="middle" font-family="Anton" font-size="28" fill="#FFFFFF">S</text>
-<path transform="translate(32 14.5)" d="M0 -8 L1.5 -2.5 L6 -5 L2.5 -1 L8 0 L2.5 1 L6 5 L1.5 2.5 L0 8 L-1.5 2.5 L-6 5 L-2.5 1 L-8 0 L-2.5 -1 L-6 -5 L-1.5 -2.5Z" fill="#FFE9B0"/>
-</svg>'''
+# 4. Simbolo: favicon e icona app. Rombo rosa con la S e la stella sulla cornice.
+MARK = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="$vb" role="img" aria-label="Strip Street">$plate'
+  '<path d="M4 35 L18 19 Q32 16 46 19 L60 35 L46 51 Q32 54 18 51 Z" transform="translate(2.5 2.5)" fill="$ink"/>'
+  '<path d="M4 35 L18 19 Q32 16 46 19 L60 35 L46 51 Q32 54 18 51 Z" fill="$rose" stroke="$ink" stroke-width="3" stroke-linejoin="round"/>'
+  + sticker(32, 47, 30, 'S', '$paper', '$ink', 4.5) +
+  f'<path transform="translate(32 15)" d="{MINI}" fill="$gold" stroke="$ink" stroke-width="1.8" stroke-linejoin="round"/></svg>')
 
-NEON = dict(bg='url(#$p-velvet)', gold='url(#$p-gold)', bulb='#FFE9B0', glow='#FF8FB0', white='#FFFFFF', neon='#E0446E',
-            tube='#FFC2D3', star='#FFE9B0', filter='url(#$p-neon)', dice='1')
-MONO = lambda c: dict(bg='none', gold=c, bulb=c, glow='none', white=c, neon='none', tube=c, star=c, filter='none', dice='0')
-
+MONO = lambda c: dict(bg='none', shade='none', fg=c, accent=c, ink=c, sw='0')
 FILES = {
-    'insegna.svg': (SIGN, NEON),
-    'insegna-mono-chiaro.svg': (SIGN, MONO('#F6EEE9')),
-    'insegna-mono-scuro.svg': (SIGN, MONO('#1A0F17')),
-    'semplificato.svg': (SIMPLE, dict(bg='#4A1530', line='#E7C98B', fg='#FFFFFF', accent='#E0446E')),
-    'semplificato-su-rosa.svg': (SIMPLE, dict(bg='#1A0F17', line='#E7C98B', fg='#FFFFFF', accent='#FF8FB0')),
-    'semplificato-mono-chiaro.svg': (SIMPLE, dict(bg='none', line='#F6EEE9', fg='#F6EEE9', accent='#F6EEE9')),
-    'semplificato-mono-scuro.svg': (SIMPLE, dict(bg='none', line='#1A0F17', fg='#1A0F17', accent='#1A0F17')),
-    'logotipo.svg': (WORD, dict(fg='#FFFFFF', accent='#E0446E', star='#E7C98B')),
-    'logotipo-su-chiaro.svg': (WORD, dict(fg='#1A0F17', accent='#C42F5A', star='#B8904A')),
-    'simbolo.svg': (MARK, dict(vb='0 0 64 64', plate='')),
-    'icona-app.svg': (MARK, dict(vb='-12 -12 88 88', plate='<rect x="-12" y="-12" width="88" height="88" rx="19" fill="#1A0F17"/>')),
+    'insegna.svg': (SIGN, {}),
+    'semplificato.svg': (SIMPLE, dict(bg=C['deep'], shade=C['ink'], fg=C['paper'], accent=C['gold'], sw='7')),
+    'semplificato-mono-scuro.svg': (SIMPLE, MONO(C['ink'])),
+    'semplificato-mono-chiaro.svg': (SIMPLE, MONO(C['paper'])),
+    'logotipo.svg': (WORD, {}),
+    'simbolo.svg': (MARK, dict(vb='0 0 66 66', plate='')),
+    'icona-app.svg': (MARK, dict(vb='-12 -12 90 90', plate=f'<rect x="-12" y="-12" width="90" height="90" rx="20" fill="{C["gold"]}"/>')),
 }
 
 def render(tpl, vals, prefix):
-    vals = {k: Template(v).substitute(p=prefix) for k, v in vals.items()}
-    return outline_all(Template(tpl).substitute(vals, p=prefix))
+    return outline_all(Template(tpl).safe_substitute({**C, **vals, 'p': prefix}))
 
 if __name__ == '__main__':
     OUT.mkdir(exist_ok=True)
-    PUBLIC.mkdir(exist_ok=True)
+    for old in OUT.glob('*.svg'):
+        old.unlink()
     for name, (tpl, vals) in FILES.items():
-        svg = render(tpl, vals, 'ss-' + name.split('.')[0])
-        (OUT / name).write_text(svg, encoding='utf-8')
+        (OUT / name).write_text(render(tpl, vals, 'ss-' + name.split('.')[0]), encoding='utf-8')
         print('scritto', OUT.name + '/' + name)
     (PUBLIC / 'favicon.svg').write_text((OUT / 'simbolo.svg').read_text(encoding='utf-8'), encoding='utf-8')
     (PUBLIC / 'icona-app.svg').write_text((OUT / 'icona-app.svg').read_text(encoding='utf-8'), encoding='utf-8')

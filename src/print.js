@@ -4,7 +4,7 @@
 import { BOARD, CARDS, RENT } from './data.js';
 import { sticker } from './icons.js';
 import { ART } from './art.js';
-import wordSvg from '../brand/export/logotipo-su-chiaro.svg?raw';
+import wordSvg from '../brand/export/logotipo.svg?raw';
 
 const CORNER_SUB = { start: 'Ritira 200€', jail: 'Solo di passaggio', relax: 'Pausa', gotojail: 'Senza passare dal Via' };
 const KIND_ICON = { colpo: 'Shuffle', jolly: 'Shield', soldi: 'Coins', riscatto: 'Flame' };

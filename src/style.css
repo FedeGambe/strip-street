@@ -1,5 +1,5 @@
 /* Strip Street — stile gioco da tavolo: carta crema, contorni d'inchiostro, ombre piene, colori saturi.
-   Il marchio (insegna neon) resta quello di brand/brand-board.html. Desktop first (mobile in un secondo momento).
+   Il marchio (insegna stile tabellone) si genera con brand/build.py, regole in brand/brand-board.html. Desktop first (mobile in un secondo momento).
    Colori e caratteri tutti in variabili: il look si cambia qui. */
 :root {
   /* brand */
@@ -77,18 +77,18 @@ b.p0, b.p1, h3.p0, h3.p1 { color: color-mix(in srgb, var(--pc) 75%, var(--ink));
 
 /* Marchio: insegna (setup) e logotipo (centro del tavolo), SVG inline da brand/export */
 .brand-sign, .brand-word { margin: 0; line-height: 0; }
-.brand-sign svg { display: block; width: min(100%, 340px); height: auto; margin: -.5rem auto .25rem; overflow: visible; }
+.brand-sign svg { display: block; width: min(100%, 340px); height: auto; max-height: 26vh; margin: -.5rem auto .25rem; overflow: visible; }
 .brand-word svg { display: block; height: clamp(26px, 4.4vh, 46px); width: auto; }
 .brand-sign .sign { transform-box: view-box; transform-origin: 210px 300px; animation: sign-rise 1s var(--pop) both; }
 .brand-sign .bulbs circle { animation: bulb-on .2s ease calc(.6s + var(--i) * 25ms) both, chase 1.2s steps(1) calc(2.2s + var(--i) * -400ms) infinite; }
-.brand-sign .n-strip { animation: flicker 2s steps(1) 1.6s both; }
-.brand-sign .n-street { animation: flicker 2s steps(1) 2.4s both; }
+.brand-sign .n-strip, .brand-sign .n-street { transform-box: fill-box; transform-origin: center; animation: stamp .45s var(--pop) 1.6s both; }
+.brand-sign .n-street { animation-delay: 2s; }
 .brand-sign .star { transform-box: fill-box; transform-origin: center; animation: twinkle 1s ease 3s both; }
 .brand-sign .dice use { animation: die-drop .7s var(--pop) 3.2s both; }
 @keyframes sign-rise { from { transform: translateY(40px) scale(.85); opacity: 0; } }
 @keyframes bulb-on { from { opacity: .1; } }
 @keyframes chase { 0% { opacity: 1; } 66% { opacity: .35; } }
-@keyframes flicker { 0%, 8%, 14%, 30% { opacity: .15; } 4%, 11%, 20%, 100% { opacity: 1; } }
+@keyframes stamp { from { transform: scale(1.8); opacity: 0; } }
 @keyframes twinkle { 0% { transform: scale(.3) rotate(-90deg); opacity: 0; } 70% { transform: scale(1.15); opacity: 1; } }
 @keyframes die-drop { from { transform: translateY(-40px) rotate(-120deg); opacity: 0; } }
 
@@ -118,7 +118,7 @@ button.danger { background: #FFE1DA; }
 body:has(#setup:not([hidden])) { overflow: auto; }
 #setup {
   width: min(500px, 92vw);
-  margin: 4vh auto;
+  margin: 2vh auto;
   background: var(--paper);
   border: 3px solid var(--ink);
   border-radius: 18px;
@@ -126,7 +126,7 @@ body:has(#setup:not([hidden])) { overflow: auto; }
   animation: rise .6s ease-out;
 }
 #setup .lid {
-  padding: 1.6rem 1rem 1.4rem;
+  padding: .9rem 1rem 1.3rem;
   background:
     repeating-linear-gradient(45deg, rgba(245, 200, 66, .08) 0 2px, transparent 2px 16px),
     linear-gradient(160deg, #6A1F45, #33091F);
@@ -144,9 +144,9 @@ body:has(#setup:not([hidden])) { overflow: auto; }
   background: linear-gradient(90deg, var(--marrone) 0 12.5%, var(--azzurro) 0 25%, var(--rosa) 0 37.5%, var(--arancione) 0 50%,
     var(--rosso) 0 62.5%, var(--giallo) 0 75%, var(--verde) 0 87.5%, var(--blu) 0);
 }
-.setup-body { padding: 1.2rem 1.8rem 2rem; display: grid; grid-template-columns: minmax(0, 1fr); gap: 1rem; }
-.deco { display: flex; justify-content: center; gap: .9rem; margin-top: -2.6rem; }
-.deco .art-svg { width: 54px; height: 54px; padding: 6px; background: var(--paper); border: var(--stroke); border-radius: 50%; box-shadow: var(--hard-sm); }
+.setup-body { padding: 1rem 1.6rem 1.4rem; display: grid; grid-template-columns: minmax(0, 1fr); gap: .7rem; }
+.deco { display: flex; justify-content: center; gap: .9rem; margin-top: -2.3rem; }
+.deco .art-svg { width: 44px; height: 44px; padding: 5px; background: var(--paper); border: var(--stroke); border-radius: 50%; box-shadow: var(--hard-sm); }
 .deco .art-svg:nth-child(odd) { transform: rotate(-8deg); }
 .deco .art-svg:nth-child(even) { transform: rotate(6deg) translateY(4px); }
 .lead { margin: 0; font: 400 1.35rem/1.15 var(--display); letter-spacing: .03em; text-transform: uppercase; text-align: center; }
@@ -156,7 +156,7 @@ body:has(#setup:not([hidden])) { overflow: auto; }
   display: flex;
   align-items: center;
   gap: .6rem;
-  padding: .6rem .8rem .6rem 1.2rem;
+  padding: .45rem .8rem .45rem 1.2rem;
   border: var(--stroke);
   border-radius: 10px;
   background: linear-gradient(90deg, var(--pc) 0 10px, color-mix(in srgb, var(--pc) 10%, var(--paper)) 10px);
@@ -164,13 +164,13 @@ body:has(#setup:not([hidden])) { overflow: auto; }
 }
 .field .pawn { width: 24px; flex-shrink: 0; filter: drop-shadow(2px 2px 0 rgba(26, 15, 23, .5)); }
 .field .pawn svg { display: block; width: 100%; fill: var(--pc); }
-.field input { background: #fff; color: var(--ink); border: var(--stroke); border-radius: 8px; padding: .55rem .8rem; }
+.field input { background: #fff; color: var(--ink); border: var(--stroke); border-radius: 8px; padding: .45rem .7rem; }
 .field input[name^="p"] { flex: 1; width: 0; min-width: 0; font-weight: 600; }
 .field input[type="number"] { width: 4.2rem; }
 .field span { color: var(--muted); font-size: .85rem; font-weight: 500; }
 .check { display: flex; gap: .5rem; align-items: center; justify-content: center; font-weight: 500; }
 .check input { accent-color: var(--rose-deep); width: 1.1rem; height: 1.1rem; }
-#setup button.primary { font: 400 1.4rem var(--display); letter-spacing: .08em; text-transform: uppercase; padding: .75rem; box-shadow: var(--hard); }
+#setup button.primary { font: 400 1.4rem var(--display); letter-spacing: .08em; text-transform: uppercase; padding: .6rem; box-shadow: var(--hard); }
 @keyframes rise { from { opacity: 0; transform: translateY(16px); } }
 
 /* ---------- Barra superiore: logotipo, impostazioni, nuova partita ---------- */
@@ -486,26 +486,57 @@ details.log[open] { flex: 1; }
 }
 .chip.strong { background: var(--gold); }
 
-/* Dadi */
-#dice { display: flex; gap: 14px; }
+/* Dadi 3D realistici: cubo avorio a 6 facce (ui.js lo gira sul risultato), inclinato per mostrare i lati.
+   Niente contorno d'inchiostro qui: facce sfumate, spigoli smussati, pallini incavati, ombra morbida. */
+#dice { display: flex; gap: 22px; perspective: 700px; padding-top: 6px; margin-bottom: 18px; } /* spazio per l'ombra e dal bottone sotto */
 .die {
-  width: clamp(40px, 6vh, 64px);
-  height: clamp(40px, 6vh, 64px);
-  padding: 12%;
-  border-radius: 20%;
-  background: #fff;
-  border: 3px solid var(--ink);
-  box-shadow: 4px 4px 0 var(--ink);
+  --s: clamp(40px, 6vh, 64px);
+  --h: calc(var(--s) / 2);
+  position: relative;
+  width: var(--s);
+  height: var(--s);
+  transform-style: preserve-3d;
+  transform: rotateX(-18deg) rotateY(22deg);
+}
+.die:nth-child(2) { transform: rotateX(-18deg) rotateY(-22deg); }
+.die:empty { border: 3px dashed var(--ink); border-radius: 18%; background: rgba(255, 255, 255, .45); transform: none; }
+/* ombra sul tavolo */
+.die:not(:empty)::after { content: ''; position: absolute; left: 4%; right: 4%; bottom: -14%; height: 20%; border-radius: 50%; background: rgba(26, 15, 23, .35); filter: blur(5px); transform: translateZ(calc(var(--h) * -1)); }
+.cube { position: absolute; inset: 0; transform-style: preserve-3d; transition: transform 1.3s cubic-bezier(.12, .6, .2, 1); }
+.f {
+  position: absolute;
+  inset: 0;
+  padding: 13%;
+  border-radius: 12%;
+  background: linear-gradient(145deg, #FFFFFF 0%, #F7F3EA 55%, #E6DFD1 100%);
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 0, 0, .06),
+    inset 2px 2px 3px rgba(255, 255, 255, .9),
+    inset -3px -3px 6px rgba(120, 100, 80, .22);
   display: grid;
   grid-template: repeat(3, 1fr) / repeat(3, 1fr);
   place-items: center;
 }
-.die:empty { background: rgba(255, 255, 255, .45); box-shadow: none; border-style: dashed; }
-.die i { width: 72%; height: 72%; border-radius: 50%; }
-.die i.on { background: var(--ink); }
-#dice.rolling .die { animation: tumble .28s linear infinite; }
-#dice.rolling .die:nth-child(2) { animation-direction: reverse; }
-@keyframes tumble { 25% { transform: rotate(18deg) translateY(-6px); } 75% { transform: rotate(-18deg) translateY(3px); } }
+.f1 { transform: translateZ(var(--h)); }
+.f6 { transform: rotateY(180deg) translateZ(var(--h)); }
+.f2 { transform: rotateY(90deg) translateZ(var(--h)); }
+.f5 { transform: rotateY(-90deg) translateZ(var(--h)); }
+.f3 { transform: rotateX(90deg) translateZ(var(--h)); }
+.f4 { transform: rotateX(-90deg) translateZ(var(--h)); }
+.f i { width: 70%; height: 70%; border-radius: 50%; }
+.f i.on { background: radial-gradient(circle at 60% 65%, #3A3438, #121012 70%); box-shadow: inset 1px 1px 2px rgba(0, 0, 0, .8), 0 1px 0 rgba(255, 255, 255, .7); }
+/* lancio: i dadi saltano sul tavolo mentre il cubo rotola (translate non tocca l'inclinazione) */
+#dice.rolling .die { animation: toss 1.3s cubic-bezier(.3, .6, .4, 1); }
+#dice.rolling .die:nth-child(2) { animation-delay: .06s; }
+@keyframes toss {
+  0% { translate: 0 0; }
+  22% { translate: -4px -38px; }
+  45% { translate: 0 0; }
+  58% { translate: 2px -9px; }
+  70% { translate: 0 0; }
+  77% { translate: 0 -2px; }
+  84%, 100% { translate: 0 0; }
+}
 
 #actions { display: flex; flex-wrap: wrap; gap: .6rem; justify-content: center; min-height: 2.9rem; }
 #actions button { animation: rise .3s ease-out both; font-size: 1.05rem; }
@@ -518,11 +549,12 @@ details.log[open] { flex: 1; }
   position: relative;
   padding: 2.1rem 1.15rem 1rem;
   overflow: hidden;
-  transition: transform .2s, box-shadow .2s;
+  transition: transform .2s, box-shadow .2s, filter .2s, opacity .2s;
 }
 .player::before { content: ''; position: absolute; inset: 0 0 auto; height: 1.3rem; background: var(--pc); border-bottom: var(--stroke); }
 .player.active { transform: translate(-2px, -2px); box-shadow: 7px 7px 0 var(--ink); }
 .player.active::after { content: 'Tocca a te'; position: absolute; top: .12rem; right: .7rem; font: 400 .8rem var(--display); letter-spacing: .1em; text-transform: uppercase; }
+.player.idle { transform: scale(.9); transform-origin: top center; opacity: .6; filter: saturate(.4) brightness(.95); }
 .player.winner { background: #FFF3B0; }
 .player.winner::after { content: 'Vince!'; position: absolute; top: .12rem; right: .7rem; font: 400 .8rem var(--display); letter-spacing: .1em; text-transform: uppercase; }
 .player .who { display: flex; align-items: center; gap: .5rem; font-size: 1.1rem; }

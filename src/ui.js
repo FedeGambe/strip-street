@@ -6,7 +6,7 @@ import * as T from './timer.js';
 import { icon, sticker } from './icons.js';
 import { ART } from './art.js';
 import signSvg from '../brand/export/insegna.svg?raw';
-import wordSvg from '../brand/export/logotipo-su-chiaro.svg?raw';
+import wordSvg from '../brand/export/logotipo.svg?raw';
 
 const KEY = 'strip-street-save-v3'; // cambiare versione se cambia la forma dello stato
 const $ = (id) => document.getElementById(id);
@@ -101,9 +101,20 @@ function followTokens() {
 // --- Dadi ---
 
 const dieHTML = (n) => Array.from({ length: 9 }, (_, i) => `<i class="${PIPS[n].includes(i) ? 'on' : ''}"></i>`).join('');
-const d6 = () => 1 + Math.floor(Math.random() * 6);
-function showDice(d) {
-  [...$('dice').children].forEach((el, i) => { el.innerHTML = dieHTML(d[i]); });
+// Dadi 3D: cubo CSS a 6 facce. ROT = rotazione [X, Y] che porta la faccia n davanti;
+// turns accumula i giri extra, così ogni lancio rotola in avanti e mai all'indietro.
+const ROT = { 1: [0, 0], 2: [0, -90], 3: [-90, 0], 4: [90, 0], 5: [0, 90], 6: [0, 180] };
+const turns = [[0, 0], [0, 0]];
+function showDice(d, spin = false) {
+  [...$('dice').children].forEach((el, i) => {
+    if (!el.firstChild) el.innerHTML = `<div class="cube">${[1, 2, 3, 4, 5, 6].map((n) => `<div class="f f${n}">${dieHTML(n)}</div>`).join('')}</div>`;
+    if (spin) {
+      turns[i][0] += 360 * (1 + Math.floor(Math.random() * 2));
+      turns[i][1] += 360 * (1 + Math.floor(Math.random() * 2)) * (i ? -1 : 1); // i due dadi girano in versi opposti
+    }
+    const [x, y] = ROT[d[i]];
+    el.firstChild.style.transform = `rotateX(${x + turns[i][0]}deg) rotateY(${y + turns[i][1]}deg)`;
+  });
 }
 
 async function rollDice() {
@@ -115,10 +126,10 @@ async function rollDice() {
   G.roll(s);
   const dice = $('dice');
   dice.classList.add('rolling');
-  for (let k = 0; k < 9; k++) { showDice([d6(), d6()]); await wait(70); }
+  showDice(s.dice, true);
+  await wait(1300); // durata della transizione del cubo (style.css)
   dice.classList.remove('rolling');
-  showDice(s.dice);
-  await wait(250);
+  await wait(150);
   const steps = s.dice[0] + s.dice[1];
   for (let k = 1; k <= steps; k++) { placeToken(who, (from + k) % BOARD.length, true); await wait(170); }
   await wait(250);
@@ -204,7 +215,7 @@ function render() {
   $('players').innerHTML = s.players.map((pl, n) => {
     const hand = [['jailFree', 'Esci di prigione', 'KeyRound'], ['shield', 'Scudo', 'Shield']]
       .flatMap(([k, label, ico]) => Array(G.held(pl, k)).fill(`<span class="chip">${icon(ico)}${label}</span>`)).join('');
-    return `<div class="player box p${n} ${n === s.turn && s.phase !== 'over' ? 'active' : ''} ${s.winner === n ? 'winner' : ''}">`
+    return `<div class="player box p${n} ${s.phase === 'over' ? '' : n === s.turn ? 'active' : 'idle'} ${s.winner === n ? 'winner' : ''}">`
       + `<div class="who"><span class="dot"></span><b>${esc(pl.name)}</b>${pl.inJail ? '<span class="chip">in prigione</span>' : ''}</div>`
       + `<div class="money">${pl.money}<small>€</small></div>`
       + `<div class="meta"><span>${icon('Shirt')}${pl.clothes} indumenti</span><span>${icon('KeyRound')}${G.propsOf(s, n).length} proprietà</span></div>`

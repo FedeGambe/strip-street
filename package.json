@@ -1,0 +1,16 @@
+{
+  "name": "strip-street",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "test": "node --test"
+  },
+  "devDependencies": {
+    "vite": "^7.0.0"
+  },
+  "dependencies": {
+    "lucide": "^1.79.0"
+  }
+}

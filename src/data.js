@@ -14,9 +14,16 @@ export const DEBT_STEP = 50;    // senza soldi: ogni 50€ mancanti = un indumen
 // Stanze: 25/50/100/200€ in base a quante ne possiede il proprietario.
 export const RENT = { marrone: 20, azzurro: 35, rosa: 50, arancione: 65, rosso: 80, giallo: 95, verde: 110, blu: 150 };
 
+// Regole scelte in Impostazioni (default per le nuove partite):
+// - onOwned: cosa succede sulla proprietà del partner: 'sfida' (esegui la sfida al posto dell'affitto),
+//   'affitto' (paghi soltanto) oppure 'entrambi'. Le stanze non hanno sfida: lì si paga sempre l'affitto.
+// - rooms: false = le 4 stanze diventano caselle Attività (si pesca una carta).
+// - startMoney: soldi con cui parte ciascun giocatore (conta solo all'inizio della partita).
+export const DEFAULT_RULES = { onOwned: 'sfida', rooms: true, startMoney: START_MONEY };
+
 // Chi esegue la sfida:
 // - proprietà libera: se la compri paghi tu e la sfida la esegue il partner; se non compri non succede nulla
-// - proprietà del partner: paghi l'affitto e la sfida la esegui tu
+// - proprietà del partner: la sfida la esegui tu (al posto dell'affitto, o insieme, secondo le regole)
 // - proprietà tua: sei al sicuro (se volete potete ripeterla)
 // - tasse, bonus, carte: esegue chi ci arriva
 // I testi sono scritti in seconda persona: "tu" = chi esegue.
@@ -29,48 +36,48 @@ export const SIDES = ['Partenza & Atmosfera', 'Contatto & Sensualità', 'Provoca
 export const BOARD = [
   // Lato 1 – Partenza & Atmosfera
   { icon: 'ArrowLeft', type: 'start', name: 'Angolo', title: 'Via!', text: 'Ritiri 200€ ogni volta che passi da qui.' },
-  { icon: 'Eye', type: 'prop', group: 'marrone', name: 'Marrone 1', title: 'Sguardo Magnetico', price: 60, timer: 30, text: 'Guardatevi negli occhi per 30 secondi: il primo che ride o distoglie lo sguardo riceve una penitenza scelta dal partner.' },
+  { icon: 'Eye', type: 'prop', group: 'marrone', name: 'Marrone 1', title: 'Sguardo Magnetico', price: 60, timer: 30, text: 'Guardatevi negli occhi per 30 secondi. Chi ride o distoglie lo sguardo per primo fa una penitenza scelta dall’altro.' },
   { icon: 'Sparkles', type: 'card', name: 'Attività', title: 'Attività', text: 'Pesca una carta.' },
-  { icon: 'MessageCircleHeart', type: 'prop', group: 'marrone', name: 'Marrone 2', title: 'Complimento Sincero', price: 60, text: 'Dì cosa ti piace del tuo partner.' },
+  { icon: 'MessageCircleHeart', type: 'prop', group: 'marrone', name: 'Marrone 2', title: 'Complimento Sincero', price: 60, text: 'Fai al partner tre complimenti sinceri: sul suo corpo, sul suo carattere, su quello che vuoi.' },
   { icon: 'Heart', type: 'tax', name: 'Tassa', title: 'Tassa Romantica', text: 'Bacio a scelta del partner.' },
   { icon: 'Sofa', type: 'room', group: 'stanza', name: 'Stanza 1', title: 'Il Divano', price: 200, text: 'Chi possiede una stanza può spostarci l’azione di qualsiasi sfida.' },
-  { icon: 'MessageCircleQuestion', type: 'prop', group: 'azzurro', name: 'Azzurro 1', title: 'Tre Domande', price: 100, text: 'Fai tre domande al partner: deve rispondere sinceramente.' },
+  { icon: 'MessageCircleQuestion', type: 'prop', group: 'azzurro', name: 'Azzurro 1', title: 'Tre Domande', price: 100, text: 'Il partner ti fa tre domande intime: rispondi a tutte con sincerità.' },
   { icon: 'Sparkles', type: 'card', name: 'Attività', title: 'Attività', text: 'Pesca una carta.' },
-  { icon: 'Speech', type: 'prop', group: 'azzurro', name: 'Azzurro 2', title: 'Sussurro Audace', price: 100, text: 'Dì qualcosa di ammiccante all’orecchio del partner.' },
-  { icon: 'WandSparkles', type: 'prop', group: 'azzurro', name: 'Azzurro 3', title: 'Desiderio Segreto', price: 120, text: 'Rivela un desiderio segreto.' },
+  { icon: 'Speech', type: 'prop', group: 'azzurro', name: 'Azzurro 2', title: 'Sussurro Audace', price: 100, text: 'Sussurra all’orecchio del partner una cosa che vorresti fare stasera.' },
+  { icon: 'WandSparkles', type: 'prop', group: 'azzurro', name: 'Azzurro 3', title: 'Desiderio Segreto', price: 120, text: 'Confessa al partner un desiderio che non gli hai mai detto.' },
   // Lato 2 – Contatto & Sensualità
   { icon: 'Lock', type: 'jail', name: 'Angolo', title: 'Prigione', text: 'Se ci sei solo di passaggio non succede nulla. In prigione non puoi toccare né guardare il partner: se lo fai, penitenza scelta dal partner oppure paghi 50€.' },
-  { icon: 'Hand', type: 'prop', group: 'rosa', name: 'Rosa 1', title: 'Mani di Velluto', price: 140, text: 'Massaggio.' },
+  { icon: 'Hand', type: 'prop', group: 'rosa', name: 'Rosa 1', title: 'Mani di Velluto', price: 140, timer: 60, text: 'Fai al partner un massaggio dove preferisce, per 1 minuto.' },
   { icon: 'Zap', type: 'bonus', name: 'Bonus', title: 'Bonus Energia', timer: 60, text: 'Massaggio di 1 minuto in una parte intima a scelta.' },
-  { icon: 'EyeOff', type: 'prop', group: 'rosa', name: 'Rosa 2', title: 'Carezze al Buio', price: 140, text: 'Sei bendato: il partner sceglie cosa farti per un tempo a sua scelta.' },
-  { icon: 'Target', type: 'prop', group: 'rosa', name: 'Rosa 3', title: 'Punto Debole', price: 160, timer: 60, text: 'Rivela un tuo punto debole: il partner potrà farci ciò che vuole per 1 minuto.' },
+  { icon: 'EyeOff', type: 'prop', group: 'rosa', name: 'Rosa 2', title: 'Carezze al Buio', price: 140, timer: 60, text: 'Bendati: per 1 minuto il partner ti accarezza come vuole.' },
+  { icon: 'Target', type: 'prop', group: 'rosa', name: 'Rosa 3', title: 'Punto Debole', price: 160, timer: 60, text: 'Dì al partner qual è il tuo punto debole: per 1 minuto può baciarlo e toccarlo come vuole.' },
   { icon: 'ChefHat', type: 'room', group: 'stanza', name: 'Stanza 2', title: 'La Cucina', price: 200, text: 'Chi possiede una stanza può spostarci l’azione di qualsiasi sfida.' },
-  { icon: 'Hourglass', type: 'prop', group: 'arancione', name: 'Arancione 1', title: 'Bacio al Rallentatore', price: 180, text: 'Bacio a rallentatore.' },
+  { icon: 'Hourglass', type: 'prop', group: 'arancione', name: 'Arancione 1', title: 'Bacio al Rallentatore', price: 180, timer: 30, text: 'Dai al partner un bacio lentissimo, senza fermarti, per 30 secondi.' },
   { icon: 'Sparkles', type: 'card', name: 'Attività', title: 'Attività', text: 'Pesca una carta.' },
-  { icon: 'Ban', type: 'prop', group: 'arancione', name: 'Arancione 2', title: 'Senza Mani', price: 180, text: 'Il partner si mette sopra di te: non puoi toccarlo né baciarlo finché non lo decide lui.' },
-  { icon: 'Shirt', type: 'prop', group: 'arancione', name: 'Arancione 3', title: 'Un Capo in Meno', price: 200, text: 'Togli un indumento scelto dal partner.' },
+  { icon: 'Ban', type: 'prop', group: 'arancione', name: 'Arancione 2', title: 'Senza Mani', price: 180, timer: 60, text: 'Il partner si siede sopra di te: per 1 minuto non puoi toccarlo né baciarlo.' },
+  { icon: 'Shirt', type: 'prop', group: 'arancione', name: 'Arancione 3', title: 'Un Capo in Meno', price: 200, text: 'Togliti l’indumento che sceglie il partner.' },
   // Lato 3 – Provocazione & Gioco
   { icon: 'Martini', type: 'relax', name: 'Angolo', title: 'Zona Franca', timer: 60, text: 'Riposatevi 1 minuto, bevete qualcosa e scambiatevi un complimento.' },
-  { icon: 'Glasses', type: 'prop', group: 'rosso', name: 'Rosso 1', title: 'Cambio Look', price: 220, text: 'Il partner sceglie se toglierti un indumento o aggiungerti qualcosa.' },
+  { icon: 'Glasses', type: 'prop', group: 'rosso', name: 'Rosso 1', title: 'Cambio Look', price: 220, text: 'Il partner decide: ti toglie un indumento oppure ti fa indossare qualcosa a sua scelta.' },
   { icon: 'Sparkles', type: 'card', name: 'Attività', title: 'Attività', text: 'Pesca una carta.' },
-  { icon: 'Feather', type: 'prop', group: 'rosso', name: 'Rosso 2', title: 'Esplorazione Sensoriale', price: 220, text: 'Il partner è bendato: potrai mettere la lingua dove vuoi.' },
-  { icon: 'Ear', type: 'prop', group: 'rosso', name: 'Rosso 3', title: 'Bendato', price: 240, text: 'Gioca con l’orecchio del partner mentre è bendato.' },
+  { icon: 'Feather', type: 'prop', group: 'rosso', name: 'Rosso 2', title: 'Esplorazione Sensoriale', price: 220, timer: 60, text: 'Benda il partner e bacialo dove vuoi, con labbra e lingua, per 1 minuto.' },
+  { icon: 'Ear', type: 'prop', group: 'rosso', name: 'Rosso 3', title: 'Bendato', price: 240, timer: 30, text: 'Benda il partner e giocagli con l’orecchio (baci, morsi, sussurri) per 30 secondi.' },
   { icon: 'ShowerHead', type: 'room', group: 'stanza', name: 'Stanza 3', title: 'La Doccia', price: 200, text: 'Chi possiede una stanza può spostarci l’azione di qualsiasi sfida.' },
-  { icon: 'Link', type: 'prop', group: 'giallo', name: 'Giallo 1', title: 'Mani Legate', price: 260, text: 'Mani legate.' },
-  { icon: 'Crown', type: 'prop', group: 'giallo', name: 'Giallo 2', title: 'Ordine Diretto', price: 260, timer: 120, text: 'Ordina al partner cosa vorresti ti facesse per 2 minuti.' },
+  { icon: 'Link', type: 'prop', group: 'giallo', name: 'Giallo 1', title: 'Mani Legate', price: 260, text: 'Il partner ti lega i polsi: restano legati fino al tuo prossimo turno.' },
+  { icon: 'Crown', type: 'prop', group: 'giallo', name: 'Giallo 2', title: 'Ordine Diretto', price: 260, timer: 120, text: 'Il partner ti dà un ordine: eseguilo per 2 minuti.' },
   { icon: 'Music', type: 'bonus', name: 'Bonus', title: 'Bonus Atmosfera', money: 200, text: 'Scegli la musica di sottofondo e incassi 200€.' },
-  { icon: 'Ribbon', type: 'prop', group: 'giallo', name: 'Giallo 3', title: 'Nodo Stretto', price: 280, text: 'Spogliati e lega il partner con l’indumento che hai tolto.' },
+  { icon: 'Ribbon', type: 'prop', group: 'giallo', name: 'Giallo 3', title: 'Nodo Stretto', price: 280, text: 'Togliti un indumento e usalo per legare i polsi del partner fino al suo prossimo turno.' },
   // Lato 4 – Alta Intensità & Gran Finale
   { icon: 'Siren', type: 'gotojail', name: 'Angolo', title: 'Vai in Prigione!', text: 'Vai in prigione senza passare dal Via.' },
-  { icon: 'Droplet', type: 'prop', group: 'verde', name: 'Verde 1', title: 'Massaggio con Olio', price: 300, text: 'Massaggio con olio.' },
-  { icon: 'Vibrate', type: 'prop', group: 'verde', name: 'Verde 2', title: 'Vibrazioni', price: 300, text: 'Il partner gioca con te con un vibratore a sua scelta.' },
+  { icon: 'Droplet', type: 'prop', group: 'verde', name: 'Verde 1', title: 'Massaggio con Olio', price: 300, timer: 120, text: 'Fai al partner un massaggio con l’olio, dove preferisce, per 2 minuti.' },
+  { icon: 'Vibrate', type: 'prop', group: 'verde', name: 'Verde 2', title: 'Vibrazioni', price: 300, timer: 60, text: 'Per 1 minuto il partner usa su di te il vibratore che preferisce.' },
   { icon: 'Sparkles', type: 'card', name: 'Attività', title: 'Attività', text: 'Pesca una carta.' },
-  { icon: 'Moon', type: 'prop', group: 'verde', name: 'Verde 3', title: 'Sotto le Coperte', price: 320, text: 'Andate sotto le coperte.' },
+  { icon: 'Moon', type: 'prop', group: 'verde', name: 'Verde 3', title: 'Sotto le Coperte', price: 320, timer: 120, text: 'Infilatevi sotto le coperte: per 2 minuti fai al partner ciò che ti chiede.' },
   { icon: 'BedDouble', type: 'room', group: 'stanza', name: 'Stanza 4', title: 'Camera da Letto', price: 200, text: 'Chi possiede una stanza può spostarci l’azione di qualsiasi sfida.' },
   { icon: 'Sparkles', type: 'card', name: 'Attività', title: 'Attività', text: 'Pesca una carta.' },
-  { icon: 'Cherry', type: 'prop', group: 'blu', name: 'Blu 1', title: 'Dolce Tentazione', price: 350, text: 'Sesso orale, a scelta.' },
+  { icon: 'Cherry', type: 'prop', group: 'blu', name: 'Blu 1', title: 'Dolce Tentazione', price: 350, timer: 120, text: 'Fai sesso orale al partner per 2 minuti.' },
   { icon: 'Infinity', type: 'tax', name: 'Tassa', title: 'Carta Bianca', text: 'Libera scelta su cosa fare al partner.' },
-  { icon: 'Flame', type: 'prop', group: 'blu', name: 'Blu 2', title: 'Il Premio Finale', price: 400, text: 'Penetrazione. È l’unica casella in cui è permessa.' },
+  { icon: 'Flame', type: 'prop', group: 'blu', name: 'Blu 2', title: 'Il Premio Finale', price: 400, text: 'Penetrazione, nella posizione che sceglie il partner. È l’unica casella in cui è permessa.' },
 ];
 
 // kind: colpo | jolly | soldi | riscatto (serve alla grafica, non al motore)

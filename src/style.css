@@ -193,6 +193,12 @@ body:has(#setup[hidden]) #setup-bg { display: none; }
 .field span { color: var(--muted); font-size: .85rem; font-weight: 500; }
 .check { display: flex; gap: .5rem; align-items: center; justify-content: center; font-weight: 500; }
 .check input { accent-color: var(--rose-deep); width: 1.1rem; height: 1.1rem; }
+/* regole scelte all'avvio */
+.rules { display: grid; gap: .5rem; margin: 0; padding: .6rem .9rem .7rem; border: var(--stroke); border-radius: 10px; background: color-mix(in srgb, var(--paper) 85%, #fff); }
+.rules legend { padding: 0 .4rem; font-size: .75rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.rules small { text-align: center; }
+.money-in { display: inline-flex; align-items: center; gap: .35rem; font-weight: 600; }
+.money-in input { width: 6.5rem; text-align: right; background: var(--paper); border: var(--stroke); border-radius: 8px; padding: .4rem .6rem; box-shadow: var(--hard-sm); }
 #setup button.primary { font: 400 1.4rem var(--display); letter-spacing: .08em; text-transform: uppercase; padding: .6rem; --btn-shadow: 4px 4px 0 var(--ink); }
 @media (hover: hover) { #setup button.primary:hover:not(:disabled) { box-shadow: 5px 5px 0 var(--ink); } }
 #setup button.primary:active:not(:disabled) { transform: translate(4px, 4px); }
@@ -376,7 +382,11 @@ body:has(#setup[hidden]) #setup-bg { display: none; }
     var(--felt);
   border: 1px solid var(--ink);
   font-size: 16px;
+  position: relative;
+  isolation: isolate; /* il logo (z-index -1) resta sopra il feltro ma sotto pannelli e carte */
 }
+/* insegna dritta, appoggiata alle caselle in basso, 16px da sinistra: compensa il margine del viewBox (18 di 420 a sinistra, 2 sotto) */
+.board-logo { --w: clamp(130px, 16vw, 250px); position: absolute; left: calc(var(--w) * -16 / 420 + 16px); bottom: calc(var(--w) * -2 / 420); z-index: -1; width: var(--w); height: auto; opacity: .35; pointer-events: none; }
 .col { display: flex; flex-direction: column; gap: 14px; min-height: 0; }
 .col.mid { align-items: center; justify-content: space-between; gap: 10px; container-type: inline-size; }
 /* Carte e mazzi si dimensionano su altezza schermo E larghezza della colonna centrale (cqi), così stanno sempre dentro.
@@ -479,6 +489,11 @@ details.log[open] { flex: 1; }
   border: var(--stroke);
   border-radius: 6px;
 }
+/* simbolo bianco (favicon) nell'angolo destro: in alto sull'intestazione colorata, in basso sul dorso */
+.face.front header { position: relative; }
+.card-logo { position: absolute; pointer-events: none; }
+.face.front .card-logo { top: .35em; right: .45em; width: 2.2em; }
+.deck-face .card-logo { bottom: 7.5%; right: 10%; width: 20%; } /* in alto c'è l'etichetta del mazzo */
 .face.front small {
   display: inline-block;
   font-size: .66em;
@@ -678,6 +693,7 @@ details.log[open] { flex: 1; }
   .col.mid { grid-area: 1 / 2 / 3 / 3; }
   .col.side-right { grid-area: 2 / 1; overflow: visible; } /* sotto i giocatori */
   details.log { display: none; }
+  .board-logo { display: none; } /* niente spazio libero sul feltro */
   .panel { padding: .4rem .6rem; }
   .side-right details[open] { position: absolute; z-index: 10; left: 8px; right: 8px; bottom: 8px; max-height: 80%; overflow: auto; }
   #manual { max-height: none; }

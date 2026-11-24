@@ -113,6 +113,15 @@ MARK = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="$vb" role="img" aria-l
   + sticker(32, 47, 30, 'S', '$paper', '$ink', 4.5) +
   f'<path transform="translate(32 15)" d="{MINI}" fill="$gold" stroke="$ink" stroke-width="1.8" stroke-linejoin="round"/></svg>')
 
+# 4b. Simbolo a un colore (per le carte), in negativo: contorno del rombo, S e stella pieni, il resto trasparente.
+RHOMB = 'M4 35 L18 19 Q32 16 46 19 L60 35 L46 51 Q32 54 18 51 Z'
+MARK_MONO = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 4 64 54" role="img" aria-label="Strip Street">'
+  f'<mask id="m" maskUnits="userSpaceOnUse" x="0" y="0" width="64" height="64"><rect width="64" height="64" fill="#fff"/>'
+  f'<path transform="translate(32 15)" d="{MINI}" fill="#000" stroke="#000" stroke-width="5" stroke-linejoin="round"/></mask>'
+  f'<path d="{RHOMB}" fill="none" stroke="$fg" stroke-width="3.5" stroke-linejoin="round" mask="url(#m)"/>'
+  '<text x="32" y="47" text-anchor="middle" font-size="30" fill="$fg">S</text>'
+  f'<path transform="translate(32 15)" d="{MINI}" fill="$fg"/></svg>')
+
 MONO = lambda c: dict(bg='none', shade='none', fg=c, accent=c, ink=c, sw='0')
 FILES = {
     'insegna.svg': (SIGN, {}),
@@ -120,6 +129,7 @@ FILES = {
     'semplificato-mono-scuro.svg': (SIMPLE, MONO(C['ink'])),
     'semplificato-mono-chiaro.svg': (SIMPLE, MONO(C['paper'])),
     'logotipo.svg': (WORD, {}),
+    'simbolo-mono-chiaro.svg': (MARK_MONO, dict(fg=C['paper'])),
     'simbolo.svg': (MARK, dict(vb='0 0 66 66', plate='')),
     'icona-app.svg': (MARK, dict(vb='-12 -12 90 90', plate=f'<rect x="-12" y="-12" width="90" height="90" rx="20" fill="{C["gold"]}"/>')),
 }

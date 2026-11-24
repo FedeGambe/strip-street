@@ -31,6 +31,26 @@
         Chi deve pagare senza soldi né vestiti va in bancarotta e perde.</p>
       <div class="field p0"><input name="p1" placeholder="Giocatore 1" required><input name="c1" type="number" min="1" max="20" value="5" required aria-label="Indumenti giocatore 1"><span>indumenti</span></div>
       <div class="field p1"><input name="p2" placeholder="Giocatore 2" required><input name="c2" type="number" min="1" max="20" value="5" required aria-label="Indumenti giocatore 2"><span>indumenti</span></div>
+      <fieldset class="rules">
+        <legend>Regole</legend>
+        <label class="field-zoom">Proprietà del partner
+          <select name="onOwned">
+            <option value="sfida">Sfida, niente affitto</option>
+            <option value="affitto">Solo affitto</option>
+            <option value="entrambi">Affitto e sfida</option>
+          </select>
+        </label>
+        <label class="field-zoom">Stanze
+          <select name="rooms">
+            <option value="on">Attive</option>
+            <option value="off">Diventano Attività</option>
+          </select>
+        </label>
+        <label class="field-zoom">Soldi iniziali
+          <span class="money-in"><input name="startMoney" type="number" min="100" max="10000" step="100" required>€</span>
+        </label>
+        <small class="muted">Affitto e stanze si possono cambiare anche durante la partita, in Impostazioni.</small>
+      </fieldset>
       <label class="check"><input type="checkbox" required> Abbiamo entrambi più di 18 anni</label>
       <button class="primary">Inizia la partita</button>
     </div>
@@ -59,6 +79,24 @@
       <h2>Impostazioni</h2>
       <h3>Timer libero</h3>
       <div id="quick" class="row"></div>
+      <h3>Regole</h3>
+      <label class="field-zoom">Proprietà del partner
+        <select id="on-owned">
+          <option value="sfida">Sfida, niente affitto</option>
+          <option value="affitto">Solo affitto</option>
+          <option value="entrambi">Affitto e sfida</option>
+        </select>
+      </label>
+      <label class="field-zoom">Stanze
+        <select id="rooms">
+          <option value="on">Attive</option>
+          <option value="off">Diventano Attività</option>
+        </select>
+      </label>
+      <label class="field-zoom">Soldi iniziali
+        <span class="money-in"><input id="start-money" type="number" min="100" max="10000" step="100">€</span>
+      </label>
+      <small class="muted">I soldi iniziali valgono dalla prossima partita.</small>
       <h3>Generali</h3>
       <label class="field-zoom">Zoom sul lato del giocatore di turno
         <select id="zoom">

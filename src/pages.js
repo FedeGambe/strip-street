@@ -24,7 +24,8 @@ function caselle() {
     + `<tbody>${props}<tr><th scope="row"><span class="swatch" style="--g: var(--stanza)"></span>Stanze</th>`
     + `<td>${rooms.map((c) => `${c.title} <small>(${c.i + 1})</small>`).join(', ')}</td><td class="num">${rooms[0].price}€</td>`
     + '<td class="num" colspan="2">25 · 50 · 100 · 200€ con 1–4 stanze</td></tr></tbody></table></div>'
-    + '<p class="muted small">Col colore completo raddoppiano sia l’affitto sia la durata della sfida.</p></section>';
+    + '<p class="muted small">Col colore completo raddoppiano sia l’affitto sia la durata della sfida. '
+    + 'Di default sulla proprietà del partner si esegue la sfida al posto dell’affitto: l’affitto si attiva in Impostazioni.</p></section>';
   const sides = SIDES.map((name, n) => `<section><h3 class="side-title"><span>Lato ${n + 1}</span>${name}</h3><div class="tiles">`
     + BOARD.slice(n * 10, n * 10 + 10).map((c, k) => {
       const i = n * 10 + k;
@@ -61,7 +62,7 @@ function guida() {
   return head('Guida al gioco', 'Come si gioca a Strip Street, passo per passo.') + '<article class="sheet box guide">'
     + section('Prima di iniziare', '<p>Strip Street è un gioco per coppie di adulti consenzienti. Mettetevi d’accordo sui limiti prima di cominciare: '
       + 'ogni sfida si può fermare in qualsiasi momento, e una parola di stop vale più di qualunque regola.</p>'
-      + `<p>Ognuno parte con <b>${START_MONEY}€</b> e indica quanti indumenti indossa: servono a pagare i debiti quando finiscono i soldi.</p>`)
+      + `<p>Ognuno parte con <b>${START_MONEY}€</b> (la cifra si cambia all’avvio della partita o in Impostazioni) e indica quanti indumenti indossa: servono a pagare i debiti quando finiscono i soldi.</p>`)
     + section('Lo scopo', '<p>Girate sul tabellone, comprate proprietà e incassate affitti. Chi deve pagare senza più soldi né vestiti '
       + 'va in <b>bancarotta</b>: l’altro vince, e chi perde esaudisce un suo desiderio.</p>')
     + section('Il turno', list([
@@ -72,14 +73,15 @@ function guida() {
     ]))
     + section('Proprietà e sfide: chi esegue?', list([
       '<b>Proprietà libera</b>: puoi comprarla. Se la compri paghi tu e la sfida la esegue il partner; se non compri non succede nulla.',
-      '<b>Proprietà del partner</b>: paghi l’affitto e la sfida la esegui tu.',
+      '<b>Proprietà del partner</b>: esegui tu la sfida, <b>al posto dell’affitto</b>. In Impostazioni potete scegliere di pagare solo l’affitto, oppure affitto e sfida insieme.',
       '<b>Proprietà tua</b>: sei al sicuro (se volete potete ripeterla).',
       '<b>Tasse, bonus e carte</b>: esegue chi ci arriva.',
     ]) + '<p>I testi delle caselle sono scritti in seconda persona: “tu” è sempre chi esegue.</p>')
     + section('Affitti e stanze', list([
-      'Ogni colore ha un affitto fisso. Con tutte le proprietà dello stesso colore l’affitto <b>raddoppia</b>, e raddoppia anche la durata della sfida.',
-      'Le quattro <b>stanze</b> non hanno sfide: l’affitto è 25, 50, 100 o 200€ a seconda di quante ne possiede il proprietario.',
+      'Ogni colore ha un affitto fisso, che si paga solo se in Impostazioni l’affitto è attivo. Con tutte le proprietà dello stesso colore l’affitto <b>raddoppia</b>, e raddoppia anche la durata della sfida.',
+      'Le quattro <b>stanze</b> non hanno sfide: lì si paga sempre l’affitto, 25, 50, 100 o 200€ a seconda di quante ne possiede il proprietario.',
       'Chi possiede una stanza può spostarci l’azione di qualsiasi sfida.',
+      'In Impostazioni potete <b>disattivare le stanze</b>: diventano caselle Attività e si pesca una carta.',
     ]) + '<p>Prezzi e affitti di ogni casella sono nella pagina <a href="#caselle">Caselle</a>.</p>')
     + section('Carte Attività', '<p>Sulle caselle Attività peschi una carta. Ce ne sono di quattro tipi: <b>Colpo di scena</b> (movimento e regole), '
       + '<b>Jolly</b> (da tenere in mano), <b>Soldi</b> e <b>Riscatto</b> (azioni, a volte riscattabili pagando). '
@@ -100,7 +102,7 @@ function guida() {
     + section('Usare l’app', list([
       'Passa sopra una casella (o toccala) per vederne testo, affitto e proprietario.',
       'Le sfide a tempo hanno il pulsante del timer; un timer libero è in <b>Impostazioni</b>.',
-      'In Impostazioni puoi anche regolare lo <b>zoom</b> sul lato del giocatore di turno.',
+      'Le <b>regole</b> (affitto, sfida o entrambi; stanze attive o no) si scelgono all’avvio della partita e si possono cambiare in Impostazioni, dove trovi anche lo <b>zoom</b> sul lato del giocatore di turno.',
       'Durante la partita la barra in alto si apre con la linguetta <b>Mostra</b>.',
       'La partita resta salvata sul dispositivo: puoi aprire Caselle, Carte e Guida e tornare al <a href="#">Gioco</a> senza perderla.',
       'Sul telefono puoi aggiungere Strip Street alla schermata Home e usarla come un’app.',

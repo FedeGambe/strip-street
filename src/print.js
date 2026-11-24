@@ -4,6 +4,7 @@
 import { BOARD, CARDS } from './data.js';
 import { CORNER_SUB, art, propCard, actCard, back as backFace } from './cards.js';
 import wordSvg from '../brand/export/logotipo.svg?raw';
+import signSvg from '../brand/export/insegna.svg?raw';
 
 const side = (i) => (i % 10 === 0 ? 'corner' : ['b', 'l', 't', 'r'][Math.floor(i / 10)]);
 function gridPos(i) {
@@ -22,7 +23,7 @@ function board() {
       + (CORNER_SUB[c.type] ? `<span class="sub">${CORNER_SUB[c.type]}</span>` : '') + '</span></div>';
   }).join('');
   const spot = (label) => `<div class="spot"><span>Mazzo ${label}</span></div>`;
-  return `<section class="page a3"><div class="pboard">${cells}<div class="pcenter"><div class="logo">${wordSvg}</div>`
+  return `<section class="page a3"><div class="pboard">${cells}<div class="pcenter"><div class="sign">${signSvg}</div><div class="logo">${wordSvg}</div>`
     + `<div class="spots">${spot('Attività')}${spot('Proprietà')}</div></div></div></section>`;
 }
 

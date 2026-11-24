@@ -18,8 +18,11 @@ body.print { height: auto; overflow: visible; background: #fff; print-color-adju
   font-size: 7.5pt;
 }
 .pboard .cell { border-radius: 0; }
-.pcenter { grid-area: 2 / 2 / 11 / 11; display: grid; place-items: center; align-content: center; gap: 14mm; }
+.pcenter { grid-area: 2 / 2 / 11 / 11; position: relative; display: grid; place-items: center; align-content: start; padding-top: 18mm; gap: 12mm; }
 .pcenter .logo svg { display: block; width: 130mm; height: auto; }
+/* Insegna completa nell'angolo in basso a sinistra, dritta, con i pali appoggiati alle caselle */
+.pcenter .sign { position: absolute; left: 6mm; bottom: 0; }
+.pcenter .sign svg { display: block; width: 62mm; height: auto; overflow: visible; }
 .spots { display: flex; gap: 22mm; }
 .spot { width: 63mm; height: 88mm; border: 2px dashed var(--ink); border-radius: 4mm; display: grid; place-items: center; background: rgba(255, 255, 255, .45); }
 .spot span { font: 400 13pt var(--display); letter-spacing: .1em; text-transform: uppercase; }

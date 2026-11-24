@@ -8,17 +8,17 @@
 
 ---
 
-Strip Street è un gioco da tavolo in stile "compra le proprietà e paga l'affitto" pensato per due giocatori. Al posto degli hotel ci sono sfide: chi capita su una proprietà del partner paga l'affitto e la esegue. Quando i soldi finiscono si pagano i debiti con gli indumenti; chi non ha più né soldi né vestiti va in bancarotta e perde.
+Strip Street è un gioco da tavolo in stile "compra le proprietà" pensato per due giocatori. Al posto degli hotel ci sono sfide: chi capita su una proprietà del partner la esegue invece di pagare l'affitto. Quando i soldi finiscono si pagano i debiti con gli indumenti; chi non ha più né soldi né vestiti va in bancarotta e perde.
 
 Si gioca nel browser, su un solo dispositivo condiviso, oppure si stampa la versione cartacea.
 
 ## Come si gioca
 
-- **Partenza:** ognuno indica quanti indumenti indossa e riceve 1500€.
+- **Partenza:** ognuno indica quanti indumenti indossa e riceve 1500€ (la cifra si può cambiare all'avvio o nelle impostazioni).
 - **Turno:** si tirano i dadi e si avanza sul tabellone di 40 caselle, diviso in quattro lati sempre più intensi (Partenza & Atmosfera, Contatto & Sensualità, Provocazione & Gioco, Alta Intensità & Gran Finale).
 - **Proprietà libera:** se la compri, la sfida la esegue il partner.
-- **Proprietà del partner:** paghi l'affitto ed esegui tu la sfida. Con tutto il gruppo di colore affitto e durata raddoppiano.
-- **Stanze** (Divano, Cucina, Doccia…): chi le possiede può spostarci qualsiasi sfida.
+- **Proprietà del partner:** esegui tu la sfida al posto dell'affitto. Nelle impostazioni si può scegliere di pagare solo l'affitto, oppure affitto e sfida. Con tutto il gruppo di colore affitto e durata raddoppiano.
+- **Stanze** (Divano, Cucina, Doccia…): chi le possiede può spostarci qualsiasi sfida. Si possono disattivare nelle impostazioni: diventano caselle Attività.
 - **Attività, tasse, bonus:** carte e caselle speciali che esegue chi ci arriva.
 - **Prigione:** niente contatto con il partner. Si esce pagando 50€, con un bacio di 15 secondi o con la carta apposita.
 - **Debiti:** senza soldi, ogni 50€ mancanti si toglie un indumento.

@@ -1,6 +1,6 @@
 // UI: tabellone stile gioco da tavolo, mazzi al centro del tavolo, animazioni. Legge lo stato del motore
 // (game.js) e lo ridisegna; le animazioni sono solo presentazione, le regole restano nel motore.
-import { BOARD, CARDS, RENT, JAIL_FINE, JAIL_KISS, ORGASM_FINE } from './data.js';
+import { BOARD, CARDS, RENT, DEFAULT_RULES, JAIL_FINE, JAIL_KISS, ORGASM_FINE } from './data.js';
 import * as G from './game.js';
 import * as T from './timer.js';
 import * as S from './sound.js';
@@ -9,6 +9,7 @@ import { ART } from './art.js';
 import { CORNER_SUB, art, propCard, actCard as actFace, back } from './cards.js';
 import { PAGES, renderPage } from './pages.js';
 import signSvg from '../brand/export/insegna.svg?raw';
+import signUrl from '../brand/export/insegna.svg?url';
 import wordSvg from '../brand/export/logotipo.svg?raw';
 import markUrl from '../brand/export/simbolo.svg?url';
 import logoUrl from '../brand/export/semplificato.svg?url';
@@ -51,23 +52,36 @@ function btn(label, fn, { disabled = false, cls = '' } = {}) {
 
 // --- Tabellone (costruito una volta, poi aggiornato) ---
 
+// Contenuto di una casella: segue le regole (stanze disattivate = caselle Attività).
+let drawnRooms = null;
+function drawCells() {
+  const rooms = G.rulesOf(s).rooms;
+  if (drawnRooms === rooms) return;
+  drawnRooms = rooms;
+  BOARD.forEach((_, i) => {
+    const c = G.cellAt(s, i);
+    const el = $(`c${i}`);
+    el.className = `cell t-${c.type} ${side(i)}`;
+    el.style.setProperty('--g', c.type === 'prop' ? `var(--${c.group})` : '');
+    el.innerHTML = `<span class="num">${i + 1}</span>${art(c)}`
+      + `<span class="txt"><span class="name">${c.title}</span>`
+      + (c.price ? `<span class="price">${c.price}€</span>` : '')
+      + (CORNER_SUB[c.type] ? `<span class="sub">${CORNER_SUB[c.type]}</span>` : '') + '</span>';
+  });
+}
+
 function buildBoard() {
   const board = $('board');
   BOARD.forEach((c, i) => {
     const el = document.createElement('div');
     const [r, col] = gridPos(i);
     el.id = `c${i}`;
-    el.className = `cell t-${c.type} ${side(i)}`;
     el.style.gridArea = `${r} / ${col}`;
-    if (c.type === 'prop') el.style.setProperty('--g', `var(--${c.group})`);
     el.tabIndex = 0; // il box si apre anche da tastiera
     el.setAttribute('aria-describedby', 'tip');
-    el.innerHTML = `<span class="num">${i + 1}</span>${art(c)}`
-      + `<span class="txt"><span class="name">${c.title}</span>`
-      + (c.price ? `<span class="price">${c.price}€</span>` : '')
-      + (CORNER_SUB[c.type] ? `<span class="sub">${CORNER_SUB[c.type]}</span>` : '') + '</span>';
     board.append(el);
   });
+  drawCells();
   for (let n = 0; n < 2; n++) {
     const t = document.createElement('div');
     t.className = `token p${n}`;
@@ -75,6 +89,8 @@ function buildBoard() {
     board.append(t);
     tokens.push(t);
   }
+  // insegna completa, semitrasparente, sul feltro della plancia in basso a sinistra (sotto giocatori e timer)
+  $('center').insertAdjacentHTML('beforeend', `<img class="board-logo" src="${signUrl}" alt="">`);
   $('deck-act').innerHTML = back('Attività', 'deckAct', '');
   $('deck-prop').innerHTML = back('Proprietà', 'deckProp', '');
   addEventListener('resize', () => s && s.players.forEach((p, n) => placeToken(n, p.pos)));
@@ -112,10 +128,12 @@ function buildBoard() {
 function showTip(cell) {
   const tip = $('tip');
   const i = +cell.id.slice(1);
-  const c = BOARD[i];
-  const owner = s?.owners[i];
+  const c = G.cellAt(s, i);
+  const owner = c.price ? s?.owners[i] : null;
   const here = s ? s.players.filter((p) => p.pos === i).map((p) => esc(p.name)) : [];
-  const rent = c.type === 'prop' ? `Affitto <b>${RENT[c.group]}€</b> · colore completo <b>${RENT[c.group] * 2}€</b>`
+  const onOwned = G.rulesOf(s).onOwned;
+  const rent = c.type === 'prop' ? (onOwned === 'sfida' ? 'Sulla proprietà del partner: <b>esegui la sfida</b>, niente affitto'
+    : `Affitto <b>${RENT[c.group]}€</b> · colore completo <b>${RENT[c.group] * 2}€</b>${onOwned === 'entrambi' ? ' · più la sfida' : ''}`)
     : c.type === 'room' ? 'Affitto <b>25 · 50 · 100 · 200€</b> per 1–4 stanze' : '';
   const status = owner != null ? `<span class="chip p${owner}">Di ${esc(s.players[owner].name)}</span>`
     : c.price ? '<span class="chip">Libera</span>' : '';
@@ -244,18 +262,19 @@ async function rollDice() {
 // --- Carte al centro ---
 
 function cellCard(pos, L) {
-  const c = BOARD[pos];
-  const owner = s.owners[pos];
+  const c = G.cellAt(s, pos);
+  const owner = c.price ? s.owners[pos] : null;
   const name = (n) => `<b class="p${n}">${esc(s.players[n].name)}</b>`;
   const chips = [];
-  if (owner != null) chips.push(`<span class="chip">Di ${name(owner)}</span>`);
+  const theirs = owner != null && owner !== s.turn;
+  // al massimo due chip: di chi è / cosa si paga, e chi fa la sfida
+  const paid = L.rent ? `affitto pagato ${L.rent.amount}€` : theirs && L.doer != null ? 'niente affitto' : '';
+  if (owner != null) chips.push(`<span class="chip">Di ${name(owner)}${paid ? ` · ${paid}` : ''}</span>`);
   if (L.canBuy && c.type === 'prop') chips.push(`<span class="chip">Se compri esegue ${name(1 - s.turn)}</span>`);
   if (L.canBuy && c.type === 'room') chips.push('<span class="chip">Libera</span>');
   if (L.own) chips.push('<span class="chip">È tua · al sicuro</span>');
-  if (L.rent) chips.push(`<span class="chip">Affitto pagato ${L.rent.amount}€</span>`);
-  if (L.doer != null) chips.push(`<span class="chip strong">Esegue ${name(L.doer)}</span>`);
-  if (L.double) chips.push('<span class="chip strong">Durata ×2</span>');
-  return propCard(c, chips.join(''));
+  if (L.doer != null) chips.push(`<span class="chip strong">${theirs ? 'Fai la sfida' : 'Esegue'}: ${name(L.doer)}${L.double ? ' · durata ×2' : ''}</span>`);
+  return propCard(c, chips.join(''), G.rulesOf(s).onOwned !== 'sfida');
 }
 
 const actCard = (id) => actFace(CARDS[id]);
@@ -275,7 +294,7 @@ function renderSlot() {
   shownKey = key;
   const cards = [];
   if (L.card != null) cards.push({ html: actCard(L.card) + back('Attività', 'deckAct'), from: 'act' });
-  if (BOARD[L.pos].type !== 'card') cards.push({ html: cellCard(L.pos, L) + back('Proprietà', 'deckProp'), from: 'prop' });
+  if (G.cellAt(s, L.pos).type !== 'card') cards.push({ html: cellCard(L.pos, L) + back('Proprietà', 'deckProp'), from: 'prop' });
   slot.innerHTML = cards.map((c, i) => `<div class="card ${fresh ? `draw from-${c.from}` : ''}" style="animation-delay:${i * 0.35}s">${c.html}</div>`).join('');
   if (fresh) S.card();
   if (fresh && !reduced) cards.forEach((c) => $(`deck-${c.from}`).animate([{ transform: 'translateY(0)' }, { transform: 'translateY(-8px)' }, { transform: 'translateY(0)' }], { duration: 300 }));
@@ -293,12 +312,13 @@ function render() {
   document.body.classList.toggle('pinned', !s || onPage);
   document.querySelectorAll('.game-only').forEach((el) => { el.hidden = !s; });
   if (!s || onPage) return;
+  drawCells();
   const p = s.players[s.turn];
   const L = s.landing;
 
   BOARD.forEach((_, i) => {
     const el = $(`c${i}`);
-    el.dataset.owner = s.owners[i] ?? '';
+    el.dataset.owner = G.cellAt(s, i).price ? s.owners[i] ?? '' : '';
     el.classList.toggle('here', !busy && L?.pos === i);
   });
   if (!busy) {
@@ -355,7 +375,7 @@ function render() {
     b.onclick = rollDice;
     a.push(b);
   } else if (s.phase === 'action' && !busy) {
-    const cell = BOARD[L.pos];
+    const cell = G.cellAt(s, L.pos);
     const card = L.card != null ? CARDS[L.card] : null;
     if (L.canBuy) a.push(btn(`Compra · ${cell.price}€`, () => G.buy(s), { disabled: p.money < cell.price }));
     L.choice?.forEach((o, i) => a.push(btn(o.label, () => G.choose(s, i))));
@@ -398,12 +418,43 @@ function swapForm() {
 $('setup').onsubmit = (e) => {
   e.preventDefault();
   const f = new FormData(e.target);
-  s = G.newGame([1, 2].map((n) => ({ name: f.get(`p${n}`), clothes: +f.get(`c${n}`) })));
+  const rules = { onOwned: f.get('onOwned'), rooms: f.get('rooms') === 'on', startMoney: money(f.get('startMoney')) };
+  localStorage.setItem(RULES_KEY, JSON.stringify(rules)); // diventano il default della prossima partita
+  s = G.newGame([1, 2].map((n) => ({ name: f.get(`p${n}`), clothes: +f.get(`c${n}`) })), rules);
   shownKey = lastMoney = lastJail = lastPhase = null;
   render();
 };
 
-$('open-settings').onclick = () => $('settings').showModal();
+$('open-settings').onclick = () => {
+  const r = G.rulesOf(s);
+  $('on-owned').value = r.onOwned;
+  $('rooms').value = r.rooms ? 'on' : 'off';
+  $('start-money').value = loadRules().startMoney; // vale per la prossima partita, non per quella in corso
+  $('settings').showModal();
+};
+// Modulo di avvio: le regole partono dalle ultime scelte.
+function fillSetupRules() {
+  const r = loadRules();
+  $('setup').onOwned.value = r.onOwned;
+  $('setup').rooms.value = r.rooms ? 'on' : 'off';
+  $('setup').startMoney.value = r.startMoney;
+}
+// Soldi iniziali: numero intero tra 100 e 10000, altrimenti il default.
+const money = (v) => (Number.isFinite(+v) && +v > 0 ? Math.min(10000, Math.max(100, Math.round(+v))) : DEFAULT_RULES.startMoney);
+// Regole: valgono per la partita in corso e restano come default per le prossime.
+const RULES_KEY = 'strip-street-rules';
+const loadRules = () => ({ ...DEFAULT_RULES, ...JSON.parse(localStorage.getItem(RULES_KEY) || '{}') });
+fillSetupRules();
+function setRules() {
+  const r = { onOwned: $('on-owned').value, rooms: $('rooms').value === 'on', startMoney: money($('start-money').value) };
+  $('start-money').value = r.startMoney;
+  localStorage.setItem(RULES_KEY, JSON.stringify(r));
+  if (s) s.rules = { ...s.rules, onOwned: r.onOwned, rooms: r.rooms }; // i soldi iniziali non toccano la partita in corso
+  render();
+}
+$('on-owned').onchange = setRules;
+$('rooms').onchange = setRules;
+$('start-money').onchange = setRules;
 // Barra in alto: si apre/chiude solo con la linguetta; un clic fuori la richiude.
 function toggleBar(open = !$('bar').classList.contains('open')) {
   $('bar').classList.toggle('open', open);
@@ -426,6 +477,7 @@ $('reset').onclick = () => {
   if (busy || !confirm('Iniziare una nuova partita? Quella in corso andrà persa.')) return;
   s = null;
   shownKey = lastMoney = lastJail = lastPhase = null;
+  fillSetupRules();
   T.stop();
   toggleBar(false);
   render();

@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { BOARD, CARDS } from '../src/data.js';
 import * as G from '../src/game.js';
 
-const game = () => G.newGame([{ name: 'A', clothes: 3 }, { name: 'B', clothes: 3 }]);
+const game = (rules) => G.newGame([{ name: 'A', clothes: 3 }, { name: 'B', clothes: 3 }], rules);
 const card = (pred) => CARDS.findIndex(pred);
 
 test('tabellone da 40 caselle con titoli, angoli al posto giusto', () => {
@@ -23,7 +23,7 @@ test('libera: nessuna sfida finché non compri, poi la esegue il partner', () =>
 });
 
 test('affitto fisso per colore, x2 e durata x2 col colore completo; propria = al sicuro', () => {
-  const s = game();
+  const s = game({ onOwned: 'entrambi' });
   s.owners[3] = 0;
   assert.equal(G.rent(s, 3), 20);
   s.owners[1] = 0;
@@ -69,7 +69,7 @@ test('prigione: non si tira, si esce pagando/baciando o si salta il turno', () =
 });
 
 test('carte: scelta blocca il fine turno, scudo restituisce l’affitto', () => {
-  const s = game();
+  const s = game({ onOwned: 'affitto' });
   s.deck = [card((c) => c.title === 'Striptease Lampo')];
   s.players[0].pos = 39;
   G.roll(s, 1, 2); // -> 2 Attività, passa dal Via
@@ -105,7 +105,7 @@ test('carte movimento: stanza più vicina, turno extra, scambio di posto', () =>
   G.endTurn(t);
   assert.equal(t.turn, 0);
 
-  const u = game();
+  const u = game({ onOwned: 'entrambi' });
   u.players[1].pos = 3;
   u.owners[3] = 1;
   u.deck = [card((c) => c.effect?.swapPos)];
@@ -154,4 +154,48 @@ test('scambio strategico: solo verso proprietà di valore uguale o superiore', (
   assert.equal(s.owners[6], 0);
   G.swap(s, 6, 39);
   assert.deepEqual([s.owners[6], s.owners[39]], [1, 0]);
+});
+
+test('soldi iniziali dalle regole', () => {
+  assert.equal(game().players[0].money, 1500);
+  assert.deepEqual(game({ startMoney: 3000 }).players.map((p) => p.money), [3000, 3000]);
+});
+
+test('default: sulla proprietà del partner si esegue la sfida al posto dell’affitto', () => {
+  const s = game();
+  Object.assign(s.owners, { 1: 0, 3: 0 });
+  s.turn = 1;
+  G.roll(s, 1, 2); // B su Complimento Sincero di A
+  assert.deepEqual([s.players[1].money, s.players[0].money], [1500, 1500]);
+  assert.equal(s.landing.doer, 1);
+  assert.equal(s.landing.rent, undefined);
+  assert.ok(s.landing.double);
+});
+
+test('solo affitto: si paga e non c’è sfida; le stanze pagano sempre', () => {
+  const s = game({ onOwned: 'affitto' });
+  s.owners[3] = 0;
+  s.turn = 1;
+  G.roll(s, 1, 2);
+  assert.equal(s.players[1].money, 1480);
+  assert.equal(s.landing.doer, undefined);
+  const t = game();
+  t.owners[5] = 0;
+  t.turn = 1;
+  G.roll(t, 2, 3); // B sul Divano di A, regola default
+  assert.equal(t.players[1].money, 1475);
+});
+
+test('stanze disattivate: diventano Attività, non si comprano, niente Fuga Romantica', () => {
+  const s = game({ rooms: false });
+  const fuga = card((c) => c.effect?.nearestRoom);
+  const extra = card((c) => c.effect?.extra);
+  s.deck = [extra, fuga];
+  G.roll(s, 2, 3); // -> 5 (Divano) = Attività: scarta la Fuga e pesca Turno Extra
+  assert.equal(G.cellAt(s, 5).type, 'card');
+  assert.equal(s.landing.canBuy, undefined);
+  assert.equal(s.landing.card, extra);
+  assert.equal(s.players[0].pos, 5);
+  s.owners[15] = 0;
+  assert.deepEqual(G.propsOf(s, 0), []);
 });

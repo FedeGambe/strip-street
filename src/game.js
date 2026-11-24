@@ -1,6 +1,6 @@
 ﻿// Motore di gioco: solo logica, nessun DOM. Lo stato è un oggetto JSON
 // (serializzabile in localStorage). Le funzioni lo mutano direttamente.
-import { BOARD, CARDS, RENT, START_MONEY, GO_BONUS, JAIL_INDEX, JAIL_FINE, JAIL_KISS, CEDE_FINE, ORGASM_FINE, DEBT_STEP } from './data.js';
+import { BOARD, CARDS, RENT, DEFAULT_RULES, GO_BONUS, JAIL_INDEX, JAIL_FINE, JAIL_KISS, CEDE_FINE, ORGASM_FINE, DEBT_STEP } from './data.js';
 
 const shuffle = (a) => {
   for (let i = a.length - 1; i > 0; i--) {
@@ -10,10 +10,12 @@ const shuffle = (a) => {
   return a;
 };
 
-// players: [{ name, clothes }]
-export function newGame(players) {
+// players: [{ name, clothes }]; rules: vedi DEFAULT_RULES (data.js), modificabili anche a partita in corso.
+export function newGame(players, rules = DEFAULT_RULES) {
+  rules = { ...DEFAULT_RULES, ...rules };
   return {
-    players: players.map(({ name, clothes }) => ({ name, clothes, money: START_MONEY, pos: 0, inJail: false, hand: [] })),
+    rules,
+    players: players.map(({ name, clothes }) => ({ name, clothes, money: rules.startMoney, pos: 0, inJail: false, hand: [] })),
     turn: 0,
     owners: {},            // indice casella -> indice giocatore
     deck: shuffle(CARDS.map((_, i) => i)),
@@ -28,10 +30,17 @@ export function newGame(players) {
 }
 
 const cur = (s) => s.players[s.turn];
+export const rulesOf = (s) => ({ ...DEFAULT_RULES, ...s?.rules });
+
+// Casella effettiva: con le stanze disattivate, una stanza si comporta (e si mostra) come una casella Attività.
+const ATTIVITA = BOARD.find((c) => c.type === 'card');
+export const cellAt = (s, i) => (BOARD[i].type === 'room' && !rulesOf(s).rooms
+  ? { ...ATTIVITA, name: BOARD[i].name.replace('Stanza', 'Attività') } : BOARD[i]);
 const other = (s) => 1 - s.turn; // ponytail: sempre 2 giocatori (coppia)
 const log = (s, msg) => s.log.unshift(msg);
 export const held = (p, keep) => p.hand.filter((id) => CARDS[id].effect.keep === keep).length;
-export const propsOf = (s, who) => Object.keys(s.owners).map(Number).filter((pos) => s.owners[pos] === who);
+// le stanze disattivate non contano: restano assegnate ma tornano valide se le riattivate
+export const propsOf = (s, who) => Object.keys(s.owners).map(Number).filter((pos) => s.owners[pos] === who && cellAt(s, pos).price);
 const groupOf = (pos) => BOARD.map((_, i) => i).filter((i) => BOARD[i].group === BOARD[pos].group);
 const fullGroup = (s, pos) => groupOf(pos).every((i) => s.owners[i] === s.owners[pos]);
 
@@ -91,7 +100,7 @@ function sendToJail(s) {
 
 function land(s) {
   const p = cur(s);
-  const cell = BOARD[p.pos];
+  const cell = cellAt(s, p.pos);
   s.landing = { pos: p.pos, card: s.landing?.card };
   log(s, `${p.name} arriva su ${cell.title}`);
 
@@ -100,12 +109,22 @@ function land(s) {
     if (owner == null) s.landing.canBuy = true; // la sfida scatta solo se compra
     else if (owner === s.turn) s.landing.own = true;
     else {
-      const amount = rent(s, p.pos);
-      if (cell.type === 'prop') s.landing.doer = s.turn; // le stanze non hanno sfida
-      s.landing.rent = { owner, amount };
-      s.landing.double = cell.type === 'prop' && fullGroup(s, p.pos);
-      log(s, `${p.name} paga ${amount}€ di affitto a ${s.players[owner].name}`);
-      transfer(s, s.turn, owner, amount);
+      // Proprietà del partner: sfida al posto dell'affitto, solo affitto o entrambi (Impostazioni).
+      // Le stanze non hanno sfida: lì si paga sempre l'affitto.
+      const { onOwned } = rulesOf(s);
+      const challenge = cell.type === 'prop' && onOwned !== 'affitto';
+      const pays = cell.type === 'room' || onOwned !== 'sfida';
+      if (challenge) {
+        s.landing.doer = s.turn;
+        s.landing.double = fullGroup(s, p.pos);
+        log(s, `${p.name} esegue la sfida di ${s.players[owner].name}${pays ? '' : ' al posto dell’affitto'}`);
+      }
+      if (pays) {
+        const amount = rent(s, p.pos);
+        s.landing.rent = { owner, amount };
+        log(s, `${p.name} paga ${amount}€ di affitto a ${s.players[owner].name}`);
+        transfer(s, s.turn, owner, amount);
+      }
     }
     return;
   }
@@ -115,12 +134,18 @@ function land(s) {
   if (cell.type === 'card') draw(s);
 }
 
+// Senza stanze la carta "Fuga Romantica" non ha senso: si scarta e se ne pesca un'altra.
+const usable = (s, id) => rulesOf(s).rooms || !CARDS[id].effect?.nearestRoom;
+
 function draw(s) {
-  if (!s.deck.length) {
-    const inHand = s.players.flatMap((p) => p.hand);
-    s.deck = shuffle(CARDS.map((_, i) => i).filter((i) => !inHand.includes(i)));
-  }
-  const id = s.deck.pop();
+  let id;
+  do {
+    if (!s.deck.length) {
+      const inHand = s.players.flatMap((p) => p.hand);
+      s.deck = shuffle(CARDS.map((_, i) => i).filter((i) => !inHand.includes(i)));
+    }
+    id = s.deck.pop();
+  } while (!usable(s, id));
   const card = CARDS[id];
   const e = card.effect || {};
   const p = cur(s);
@@ -141,7 +166,7 @@ function draw(s) {
   if (e.back) moveTo(s, (p.pos - e.back + BOARD.length) % BOARD.length, false);
   if (e.nearestRoom) {
     let i = (p.pos + 1) % BOARD.length;
-    while (BOARD[i].type !== 'room') i = (i + 1) % BOARD.length;
+    while (cellAt(s, i).type !== 'room') i = (i + 1) % BOARD.length;
     moveTo(s, i);
   }
   if (e.swapPos) {
@@ -173,7 +198,7 @@ export function roll(s, d1 = 1 + Math.floor(Math.random() * 6), d2 = 1 + Math.fl
 
 export function buy(s) {
   const p = cur(s);
-  const cell = BOARD[p.pos];
+  const cell = cellAt(s, p.pos);
   if (!s.landing?.canBuy || p.money < cell.price) return;
   transfer(s, s.turn, null, cell.price);
   s.owners[p.pos] = s.turn;
@@ -193,7 +218,7 @@ export function choose(s, i) {
 
 // Carta "Scambio Strategico": dai una tua proprietà e prendi una del partner di valore uguale o superiore.
 export function swap(s, mine, theirs) {
-  if (!s.landing?.swap || s.owners[mine] !== s.turn || s.owners[theirs] !== other(s)) return;
+  if (!s.landing?.swap || !propsOf(s, s.turn).includes(mine) || !propsOf(s, other(s)).includes(theirs)) return;
   if (BOARD[theirs].price < BOARD[mine].price) return;
   s.owners[mine] = other(s);
   s.owners[theirs] = s.turn;

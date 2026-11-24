@@ -21,6 +21,9 @@ export const RENT = { marrone: 20, azzurro: 35, rosa: 50, arancione: 65, rosso: 
 // - tasse, bonus, carte: esegue chi ci arriva
 // I testi sono scritti in seconda persona: "tu" = chi esegue.
 
+// Nomi dei 4 lati del tabellone (10 caselle ciascuno, angolo compreso): titoli della pagina Caselle.
+export const SIDES = ['Partenza & Atmosfera', 'Contatto & Sensualità', 'Provocazione & Gioco', 'Alta Intensità & Gran Finale'];
+
 // icon: nome icona Lucide (https://lucide.dev/icons). title: nome mostrato. name: posizione/colore. timer: secondi della sfida a tempo.
 // type: start | prop | room | card | tax | bonus | jail | relax | gotojail
 export const BOARD = [

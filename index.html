@@ -2,10 +2,18 @@
 <html lang="it">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- viewport-fit=cover: la pagina arriva fino ai bordi, i margini sicuri (tacca, barra home) li gestisce il CSS -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Strip Street</title>
   <meta name="theme-color" content="#4A1530">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <!-- installabile come app (Aggiungi a Home): si apre a schermo intero, senza barre del browser -->
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Strip Street">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lilita+One&display=swap" rel="stylesheet">
@@ -27,14 +35,23 @@
     </div>
   </form>
 
-  <header id="bar" hidden>
+  <header id="bar">
     <button type="button" class="tab" id="bar-tab" aria-expanded="false" aria-controls="bar">Mostra ▾</button>
     <h1 class="brand-word" id="brand-word"><span class="sr-only">Strip Street</span></h1>
-    <div class="row">
+    <nav class="nav" aria-label="Sezioni">
+      <a href="#">Gioco</a>
+      <a href="#caselle">Caselle</a>
+      <a href="#carte">Carte</a>
+      <a href="#guida">Guida</a>
+    </nav>
+    <div class="row game-only">
       <button id="open-settings" class="small">Impostazioni</button>
       <button id="reset" class="small">Nuova partita</button>
     </div>
   </header>
+
+  <!-- sottopagine (#caselle, #carte, #guida): pages.js -->
+  <main id="page" hidden tabindex="-1"></main>
 
   <dialog id="settings" class="box">
     <form method="dialog">
@@ -48,6 +65,14 @@
           <option value="leggero">Leggero</option>
           <option value="medio">Medio</option>
           <option value="forte">Forte</option>
+        </select>
+      </label>
+      <label class="field-zoom">Effetti sonori
+        <select id="sound">
+          <option value="off">Spenti</option>
+          <option value="basso">Bassi</option>
+          <option value="medio">Medi</option>
+          <option value="alto">Alti</option>
         </select>
       </label>
       <button class="primary">Chiudi</button>

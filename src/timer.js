@@ -1,5 +1,7 @@
 // Timer delle sfide a tempo, con anello di avanzamento. Vive fuori dallo stato di gioco
 // (non si salva): ricaricando la pagina il timer riparte da zero.
+import { bell } from './sound.js';
+
 const el = document.getElementById('timer');
 const R = 42;
 const C = 2 * Math.PI * R;
@@ -10,16 +12,7 @@ let tick = null;
 export const fmt = (sec) => `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, '0')}`;
 
 function beep() {
-  try {
-    const ctx = new AudioContext();
-    [0, 0.3, 0.6].forEach((t) => {
-      const o = ctx.createOscillator();
-      o.frequency.value = 880;
-      o.connect(ctx.destination);
-      o.start(ctx.currentTime + t);
-      o.stop(ctx.currentTime + t + 0.2);
-    });
-  } catch { /* audio non disponibile: resta il messaggio a schermo */ }
+  bell();
   navigator.vibrate?.([300, 100, 300]);
 }
 

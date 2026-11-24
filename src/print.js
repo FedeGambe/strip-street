@@ -1,15 +1,10 @@
 // Fogli stampabili: tabellone (A3) e carte (3x3 per foglio A4, fronte e retro per la stampa fronte/retro).
-// Riusa dati, illustrazioni e stile dell'app; i template delle carte sono la versione "da tavolo" di quelli in ui.js
-// (senza chip di stato della partita).
-import { BOARD, CARDS, RENT } from './data.js';
-import { sticker } from './icons.js';
-import { ART } from './art.js';
+// Riusa dati, illustrazioni e stile dell'app; i template delle carte sono in cards.js
+// (qui senza chip di stato della partita).
+import { BOARD, CARDS } from './data.js';
+import { CORNER_SUB, art, propCard, actCard, back as backFace } from './cards.js';
 import wordSvg from '../brand/export/logotipo.svg?raw';
 
-const CORNER_SUB = { start: 'Ritira 200€', jail: 'Solo di passaggio', relax: 'Pausa', gotojail: 'Senza passare dal Via' };
-const KIND_ICON = { colpo: 'Shuffle', jolly: 'Shield', soldi: 'Coins', riscatto: 'Flame' };
-const KIND = { colpo: 'Colpo di scena', jolly: 'Jolly', soldi: 'Soldi', riscatto: 'Riscatto' };
-const art = (c, cls = 'ico') => ART[c.type] || ART[c.icon] || sticker(c.icon, cls);
 const side = (i) => (i % 10 === 0 ? 'corner' : ['b', 'l', 't', 'r'][Math.floor(i / 10)]);
 function gridPos(i) {
   if (i <= 10) return [11, 11 - i];
@@ -31,16 +26,7 @@ function board() {
     + `<div class="spots">${spot('Attività')}${spot('Proprietà')}</div></div></div></section>`;
 }
 
-const propCard = (c) => {
-  const rent = c.type === 'prop' ? `Affitto ${RENT[c.group]}€ · completo ${RENT[c.group] * 2}€`
-    : c.type === 'room' ? 'Affitto 25 · 50 · 100 · 200€' : '';
-  return `<div class="face front cell-card t-${c.type}"${c.type === 'prop' ? ` style="--g: var(--${c.group})"` : ''}>`
-    + `<header><small>${c.name}${c.price ? ` · ${c.price}€` : ''}</small><h2>${c.title}</h2></header>`
-    + `<div class="art">${art(c, 'ico big')}</div><p class="task">${c.text}</p>${rent ? `<p class="rent">${rent}</p>` : ''}</div>`;
-};
-const actCard = (c) => `<div class="face front act-card ${c.kind}"><header><small>${KIND[c.kind]}</small><h2>${c.title}</h2></header>`
-  + `<div class="art">${art({ icon: KIND_ICON[c.kind] }, 'ico big')}</div><p class="task">${c.text}</p></div>`;
-const back = (label, key) => `<div class="deck-face">${ART[key]}<span>${label}</span></div>`;
+const back = (label, key) => backFace(label, key, '');
 
 // 9 carte per foglio; dopo ogni foglio di fronti, il foglio dei retro con le colonne specchiate
 // (stampa fronte/retro sul lato lungo: la carta in alto a sinistra ha il retro in alto a destra).
@@ -60,5 +46,5 @@ document.body.dataset.sheet = sheet;
 document.getElementById('sheets').innerHTML = {
   tabellone: board,
   attivita: () => cards(CARDS.map(actCard), back('Attività', 'deckAct')),
-  proprieta: () => cards(BOARD.filter((c) => c.type !== 'card').map(propCard), back('Proprietà', 'deckProp')),
+  proprieta: () => cards(BOARD.filter((c) => c.type !== 'card').map((c) => propCard(c)), back('Proprietà', 'deckProp')),
 }[sheet]();

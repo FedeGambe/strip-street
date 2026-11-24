@@ -3,8 +3,11 @@
 import { BOARD, CARDS, RENT, JAIL_FINE, JAIL_KISS, ORGASM_FINE } from './data.js';
 import * as G from './game.js';
 import * as T from './timer.js';
-import { icon, sticker } from './icons.js';
+import * as S from './sound.js';
+import { icon } from './icons.js';
 import { ART } from './art.js';
+import { CORNER_SUB, art, propCard, actCard as actFace, back } from './cards.js';
+import { PAGES, renderPage } from './pages.js';
 import signSvg from '../brand/export/insegna.svg?raw';
 import wordSvg from '../brand/export/logotipo.svg?raw';
 import markUrl from '../brand/export/simbolo.svg?url';
@@ -20,12 +23,10 @@ let s = JSON.parse(localStorage.getItem(KEY) || 'null');
 let busy = false;       // animazione in corso: bottoni bloccati
 let shownKey = null;    // carta mostrata al centro (per animare solo le nuove)
 let lastMoney = null;   // per le animazioni +/-€
+let lastJail = null;    // per il suono quando qualcuno finisce in prigione
+let lastPhase = null;   // per il suono di vittoria
 const tokens = [];
 
-// Sottotitoli degli angoli, come sul tabellone del Monopoly.
-const CORNER_SUB = { start: 'Ritira 200€', jail: 'Solo di passaggio', relax: 'Pausa', gotojail: 'Senza passare dal Via' };
-const KIND_ICON = { colpo: 'Shuffle', jolly: 'Shield', soldi: 'Coins', riscatto: 'Flame' };
-const KIND = { colpo: 'Colpo di scena', jolly: 'Jolly', soldi: 'Soldi', riscatto: 'Riscatto' };
 const PIPS = { 1: [4], 2: [0, 8], 3: [0, 4, 8], 4: [0, 2, 6, 8], 5: [0, 2, 4, 6, 8], 6: [0, 2, 3, 5, 6, 8] };
 
 // Posizione sul perimetro di una griglia 11x11 (Via in basso a destra, senso orario come Monopoli).
@@ -36,8 +37,6 @@ function gridPos(i) {
   return [i - 29, 11];
 }
 // Lato del tabellone: serve a mettere la fascia colorata sul bordo interno.
-// Illustrazione dedicata (angoli per tipo, le altre per icona); se manca, icona ad adesivo.
-const art = (c, cls = 'ico') => ART[c.type] || ART[c.icon] || sticker(c.icon, cls);
 const PAWN = '<svg viewBox="0 0 24 30" aria-hidden="true"><g stroke="#1A0F17" stroke-width="2" stroke-linejoin="round"><path d="M8 13h8l2.5 11h-13z"/><circle cx="12" cy="8" r="5"/><rect x="3" y="24" width="18" height="5" rx="2"/></g></svg>';
 const side = (i) => (i % 10 === 0 ? 'corner' : ['b', 'l', 't', 'r'][Math.floor(i / 10)]);
 
@@ -84,15 +83,26 @@ function buildBoard() {
   tip.setAttribute('role', 'tooltip');
   document.body.append(tip);
   const open = (e) => { const cell = e.target.closest?.(".cell"); if (cell && (tip.dataset.at !== cell.id || !tip.classList.contains("on"))) showTip(cell); };
-  board.addEventListener('pointerover', open);
+  // Col dito pointerover/pointerout arrivano tutti insieme al rilascio: il tocco ha la sua gestione più sotto.
+  const touch = (e) => e.pointerType === 'touch';
+  board.addEventListener('pointerover', (e) => { if (!touch(e)) open(e); });
   // da tastiera si apre col focus; col mouse il clic lascia il focus sulla casella, quindi qui solo :focus-visible
   board.addEventListener('focusin', (e) => { if (e.target.matches?.('.cell:focus-visible')) open(e); });
   // si chiude appena il puntatore esce dalla casella (anche verso il centro del tabellone)
   board.addEventListener('pointerout', (e) => {
+    if (touch(e)) return;
     const cell = e.target.closest?.('.cell');
     if (cell && !cell.contains(e.relatedTarget) && tip.dataset.at === cell.id) hideTip();
   });
-  board.addEventListener('pointerleave', hideTip);
+  board.addEventListener('pointerleave', (e) => { if (!touch(e)) hideTip(); });
+  // Al tocco: un tap sulla casella apre il box (un secondo tap lo chiude), un tap altrove lo chiude.
+  board.addEventListener('pointerup', (e) => {
+    const cell = touch(e) && e.target.closest?.('.cell');
+    if (!cell) return;
+    if (tip.classList.contains('on') && tip.dataset.at === cell.id) hideTip();
+    else showTip(cell);
+  });
+  document.addEventListener('pointerdown', (e) => { if (touch(e) && !e.target.closest?.('.cell')) hideTip(); });
   board.addEventListener('focusout', hideTip);
   addEventListener('scroll', hideTip, true);
 }
@@ -136,14 +146,44 @@ function showTip(cell) {
 
 const hideTip = () => $('tip')?.classList.remove('on');
 
+// Posizione mostrata di ciascuna pedina (durante i passi differisce da s.players[n].pos).
+const shown = [];
+
 function placeToken(n, pos, hop = false) {
+  const prev = shown[n];
+  shown[n] = pos;
+  layoutToken(n);
+  // l'altra pedina si sposta di lato se la raggiungo, torna al centro se me ne vado
+  const o = 1 - n;
+  if (shown[o] != null && (shown[o] === pos || shown[o] === prev)) layoutToken(o);
+  if (hop && !reduced) tokens[n].firstChild.animate([{ transform: 'translateY(0)' }, { transform: 'translateY(-12px)' }, { transform: 'translateY(0)' }], { duration: 160, easing: 'ease-out' });
+}
+
+// Sul bordo interno della casella (fascia colore, verso il centro del tavolo): non copre nome e disegno.
+// Se le due pedine stanno sulla stessa casella si affiancano lungo il bordo, altrimenti stanno al centro.
+function layoutToken(n) {
+  const pos = shown[n];
   const cell = $(`c${pos}`);
   const t = tokens[n];
-  // in alto a destra nella casella, una accanto all'altra
-  const x = cell.offsetLeft + cell.offsetWidth - t.offsetWidth * (n ? 1.15 : 2.3) - 6;
-  const y = cell.offsetTop + cell.offsetHeight * 0.2;
+  const w = t.offsetWidth, h = t.offsetHeight;
+  const { offsetLeft: L, offsetTop: T, offsetWidth: W, offsetHeight: H } = cell;
+  const shared = shown[1 - n] === pos;
+  const off = shared ? (n ? 0.62 : -0.62) : 0;
+  const out = 0.3; // quota della pedina che sporge sul tavolo
+  const sd = side(pos);
+  let x, y;
+  if (sd === 'b') { x = L + W / 2 - w / 2 + off * w; y = T - h * out; }
+  else if (sd === 't') { x = L + W / 2 - w / 2 + off * w; y = T + H - h * (1 - out); }
+  else if (sd === 'l') { x = L + W - w * (1 - out); y = T + H / 2 - h / 2 + off * h; }
+  else if (sd === 'r') { x = L - w * out; y = T + H / 2 - h / 2 + off * h; }
+  else { // angoli: dentro la casella, vicino allo spigolo verso il tavolo; la seconda pedina accanto
+    const leftEdge = pos === 0 || pos === 30; // Via e Vai in prigione hanno il tavolo a sinistra
+    const topEdge = pos === 0 || pos === 10;  // Via e Prigione hanno il tavolo sopra
+    const m = w * 0.35;
+    x = (leftEdge ? L + m : L + W - w - m) + (shared && n ? (leftEdge ? 1.15 : -1.15) * w : 0);
+    y = topEdge ? T + m : T + H - h - m;
+  }
   t.style.transform = `translate(${x}px, ${y}px)`;
-  if (hop && !reduced) t.firstChild.animate([{ transform: 'translateY(0)' }, { transform: 'translateY(-12px)' }, { transform: 'translateY(0)' }], { duration: 160, easing: 'ease-out' });
 }
 
 // Durante la transizione dello zoom le caselle si spostano: le pedine le inseguono per ~0,6s.
@@ -165,7 +205,12 @@ const ROT = { 1: [0, 0], 2: [0, -90], 3: [-90, 0], 4: [90, 0], 5: [0, 90], 6: [0
 const turns = [[0, 0], [0, 0]];
 function showDice(d, spin = false) {
   [...$('dice').children].forEach((el, i) => {
-    if (!el.firstChild) el.innerHTML = `<div class="cube">${[1, 2, 3, 4, 5, 6].map((n) => `<div class="f f${n}">${dieHTML(n)}</div>`).join('')}</div>`;
+    if (!el.firstChild) {
+      el.innerHTML = `<div class="cube">${[1, 2, 3, 4, 5, 6].map((n) => `<div class="f f${n}">${dieHTML(n)}</div>`).join('')}</div>`;
+      // cubo appena creato: fissa la posizione di partenza prima del lancio, altrimenti la transizione non parte
+      el.firstChild.style.transform = 'rotateX(0deg) rotateY(0deg)';
+      el.firstChild.getBoundingClientRect();
+    }
     if (spin) {
       turns[i][0] += 360 * (1 + Math.floor(Math.random() * 2));
       turns[i][1] += 360 * (1 + Math.floor(Math.random() * 2)) * (i ? -1 : 1); // i due dadi girano in versi opposti
@@ -185,11 +230,12 @@ async function rollDice() {
   const dice = $('dice');
   dice.classList.add('rolling');
   showDice(s.dice, true);
+  S.dice();
   await wait(1300); // durata della transizione del cubo (style.css)
   dice.classList.remove('rolling');
   await wait(150);
   const steps = s.dice[0] + s.dice[1];
-  for (let k = 1; k <= steps; k++) { placeToken(who, (from + k) % BOARD.length, true); await wait(170); }
+  for (let k = 1; k <= steps; k++) { placeToken(who, (from + k) % BOARD.length, true); S.step(); await wait(170); }
   await wait(250);
   busy = false;
   render(); // eventuali salti (prigione, carte) scivolano con la transizione CSS
@@ -209,22 +255,10 @@ function cellCard(pos, L) {
   if (L.rent) chips.push(`<span class="chip">Affitto pagato ${L.rent.amount}€</span>`);
   if (L.doer != null) chips.push(`<span class="chip strong">Esegue ${name(L.doer)}</span>`);
   if (L.double) chips.push('<span class="chip strong">Durata ×2</span>');
-  const rent = c.type === 'prop' ? `Affitto ${RENT[c.group]}€ · completo ${RENT[c.group] * 2}€`
-    : c.type === 'room' ? 'Affitto 25 · 50 · 100 · 200€' : '';
-  return `<div class="face front cell-card t-${c.type}"${c.type === 'prop' ? ` style="--g: var(--${c.group})"` : ''}>`
-    + `<header><small>${c.name}${c.price ? ` · ${c.price}€` : ''}</small><h2>${c.title}</h2></header>`
-    + `<div class="art">${art(c, 'ico big')}</div><p class="task">${c.text}</p>${rent ? `<p class="rent">${rent}</p>` : ''}`
-    + `<footer>${chips.join('')}</footer></div>`;
+  return propCard(c, chips.join(''));
 }
 
-function actCard(id) {
-  const c = CARDS[id];
-  return `<div class="face front act-card ${c.kind}">`
-    + `<header><small>${KIND[c.kind]}</small><h2>${c.title}</h2></header>`
-    + `<div class="art">${art({ icon: KIND_ICON[c.kind] }, 'ico big')}</div><p class="task">${c.text}</p>`
-}
-
-const back = (label, artKey, cls = 'face back') => `<div class="${cls} deck-face">${ART[artKey]}<span>${label}</span></div>`;
+const actCard = (id) => actFace(CARDS[id]);
 
 function renderSlot() {
   const L = s.landing;
@@ -243,6 +277,7 @@ function renderSlot() {
   if (L.card != null) cards.push({ html: actCard(L.card) + back('Attività', 'deckAct'), from: 'act' });
   if (BOARD[L.pos].type !== 'card') cards.push({ html: cellCard(L.pos, L) + back('Proprietà', 'deckProp'), from: 'prop' });
   slot.innerHTML = cards.map((c, i) => `<div class="card ${fresh ? `draw from-${c.from}` : ''}" style="animation-delay:${i * 0.35}s">${c.html}</div>`).join('');
+  if (fresh) S.card();
   if (fresh && !reduced) cards.forEach((c) => $(`deck-${c.from}`).animate([{ transform: 'translateY(0)' }, { transform: 'translateY(-8px)' }, { transform: 'translateY(0)' }], { duration: 300 }));
 }
 
@@ -250,9 +285,14 @@ function renderSlot() {
 
 function render() {
   localStorage.setItem(KEY, JSON.stringify(s));
-  $('setup').hidden = !!s;
-  $('board').hidden = $('bar').hidden = !s;
-  if (!s) return;
+  const page = location.hash.slice(1);
+  const onPage = Object.hasOwn(PAGES, page);
+  $('setup').hidden = !!s || onPage;
+  $('board').hidden = !s || onPage;
+  // barra fissa in vista nel setup e nelle sottopagine; in partita si apre con la linguetta
+  document.body.classList.toggle('pinned', !s || onPage);
+  document.querySelectorAll('.game-only').forEach((el) => { el.hidden = !s; });
+  if (!s || onPage) return;
   const p = s.players[s.turn];
   const L = s.landing;
 
@@ -287,7 +327,18 @@ function render() {
     span.textContent = `${d > 0 ? '+' : '−'}${Math.abs(d)}€`;
     $('players').children[n].append(span);
   });
+  if (lastMoney && !busy) {
+    const d = s.players.map((pl, n) => pl.money - lastMoney[n]);
+    // un suono solo: se qualcuno incassa vince il ding (affitti: uno paga, l'altro riceve)
+    if (d.some((x) => x > 0)) S.coin(); else if (d.some((x) => x < 0)) S.pay();
+  }
   if (!busy) lastMoney = s.players.map((pl) => pl.money);
+  if (!busy) {
+    if (lastJail && s.players.some((pl, n) => pl.inJail && !lastJail[n])) S.jail();
+    if (lastPhase && lastPhase !== 'over' && s.phase === 'over') S.win();
+    lastJail = s.players.map((pl) => pl.inJail);
+    lastPhase = s.phase;
+  }
 
   $('alert').hidden = busy || !s.alert;
   $('alert').textContent = s.alert || '';
@@ -348,7 +399,7 @@ $('setup').onsubmit = (e) => {
   e.preventDefault();
   const f = new FormData(e.target);
   s = G.newGame([1, 2].map((n) => ({ name: f.get(`p${n}`), clothes: +f.get(`c${n}`) })));
-  shownKey = lastMoney = null;
+  shownKey = lastMoney = lastJail = lastPhase = null;
   render();
 };
 
@@ -366,13 +417,15 @@ document.addEventListener('click', (e) => {
 // Preferenze generali: salvate a parte dalla partita, restano anche con "Nuova partita".
 const ZOOM_KEY = 'strip-street-zoom';
 const savedZoom = localStorage.getItem(ZOOM_KEY);
-$('zoom').value = ['off', 'leggero', 'medio', 'forte'].includes(savedZoom) ? savedZoom : 'medio'; // 'on' (versione vecchia) = medio
+$('zoom').value = ['off', 'leggero', 'medio', 'forte'].includes(savedZoom) ? savedZoom : 'forte'; // default: forte ('on' della versione vecchia compreso)
 $('zoom').onchange = () => { localStorage.setItem(ZOOM_KEY, $('zoom').value); render(); };
+$('sound').value = S.getLevel();
+$('sound').onchange = () => { S.setLevel($('sound').value); S.coin(); }; // anteprima del volume
 
 $('reset').onclick = () => {
   if (busy || !confirm('Iniziare una nuova partita? Quella in corso andrà persa.')) return;
   s = null;
-  shownKey = lastMoney = null;
+  shownKey = lastMoney = lastJail = lastPhase = null;
   T.stop();
   toggleBar(false);
   render();
@@ -392,5 +445,22 @@ $('setup-bg').innerHTML = Array.from({ length: 34 }, (_, i) => {
   return mark ? `<img class="bg-mark" src="${markUrl}" alt="" style="${css}">` : `<i class="bg-star" style="${css}">${STAR}</i>`;
 }).join('') + `<img class="bg-logo" src="${logoUrl}" alt="">`;
 
+// Sottopagine dall'header: #caselle, #carte, #guida (# = gioco). La partita resta in memoria e si riprende.
+function route() {
+  const page = location.hash.slice(1);
+  const onPage = Object.hasOwn(PAGES, page);
+  $('page').hidden = !onPage;
+  if (onPage) $('page').innerHTML = renderPage(page);
+  document.querySelectorAll('.nav a').forEach((a) => {
+    if (a.getAttribute('href').slice(1) === (onPage ? page : '')) a.setAttribute('aria-current', 'page');
+    else a.removeAttribute('aria-current');
+  });
+  hideTip();
+  toggleBar(false);
+  render();
+  if (onPage) { $('page').scrollTop = 0; $('page').focus({ preventScroll: true }); }
+}
+addEventListener('hashchange', route);
+
 buildBoard();
-render();
+route();

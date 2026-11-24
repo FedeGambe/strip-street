@@ -3,5 +3,4 @@ dist/
 .playwright-mcp/
 .impeccable/
 .claude/
-.impeccable/
 .env

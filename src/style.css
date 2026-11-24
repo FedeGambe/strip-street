@@ -194,8 +194,13 @@ body:has(#setup[hidden]) #setup-bg { display: none; }
 .check { display: flex; gap: .5rem; align-items: center; justify-content: center; font-weight: 500; }
 .check input { accent-color: var(--rose-deep); width: 1.1rem; height: 1.1rem; }
 /* classificazione: bollino età rosso + icona del contenuto */
-.rating { display: flex; align-items: center; gap: .5rem; }
-.rating .lead { margin-left: .4rem; text-align: left; }
+/* in basso a sinistra sul coperchio, come sulla scatola */
+.rating { position: absolute; left: 12px; bottom: 22px; display: flex; gap: 6px; }
+/* coperchio sopra il modulo: bollini più piccoli per non toccare l'insegna */
+.rating .badge { width: 34px; height: 42px; }
+.rating .badge.age b { font-size: 1.2rem; }
+.rating .badge.desc svg { width: 24px; }
+.rating .badge small { font-size: .42rem; }
 .badge { flex-shrink: 0; display: grid; grid-template-rows: 1fr auto; place-items: center; width: 46px; height: 56px; border: var(--stroke); border-radius: 8px; box-shadow: var(--hard-sm); overflow: hidden; }
 .badge small { width: 100%; padding: 1px 0 2px; font: 700 .5rem/1 var(--font); letter-spacing: .08em; text-transform: uppercase; text-align: center; }
 .badge.age { background: #E3001B; color: #fff; }
@@ -656,6 +661,46 @@ details.log[open] { flex: 1; }
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
 
+/* ---------- Setup su schermi larghi: insegna a sinistra, modulo in due colonne (giocatori | regole) ---------- */
+@media (min-width: 900px) and (min-height: 501px) {
+  #setup { width: min(1060px, 94vw); display: grid; grid-template-columns: minmax(200px, 3fr) 7fr; }
+  #setup .lid { display: grid; place-items: center; padding: 1.2rem; border-bottom: 0; border-right: 3px solid var(--ink); border-radius: 15px 0 0 15px; }
+  /* fascia dei colori in verticale, sul bordo destro del coperchio */
+  #setup .lid::after { left: auto; top: 0; width: 12px; height: auto; border-top: 0; border-left: var(--stroke);
+    background: linear-gradient(180deg, var(--marrone) 0 12.5%, var(--azzurro) 0 25%, var(--rosa) 0 37.5%, var(--arancione) 0 50%,
+      var(--rosso) 0 62.5%, var(--giallo) 0 75%, var(--verde) 0 87.5%, var(--blu) 0); }
+  #setup .lid .brand-sign { margin: 0 12px 0 0; }
+  #setup .deco { display: none; }
+  .setup-body {
+    padding: 1.3rem 1.6rem; column-gap: 1.4rem; align-content: center;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    grid-template-areas: "lead lead" "intro rules" "p0 rules" "p1 rules" "check btn";
+  }
+  .setup-body > .lead { grid-area: lead; }
+  #setup .lid .rating { bottom: 12px; }
+  #setup .rating .badge { width: 46px; height: 56px; }
+  #setup .rating .badge.age b { font-size: 1.65rem; }
+  #setup .rating .badge.desc svg { width: 34px; }
+  #setup .rating .badge small { font-size: .5rem; }
+  #setup .setup-body > p.muted { grid-area: intro; text-align: left; align-self: end; }
+  #setup .field { gap: .45rem; padding-right: .6rem; }
+  #setup .field input[type="number"] { width: 3.4rem; }
+  #setup .field span { font-size: .78rem; }
+  .setup-body > .field.p0 { grid-area: p0; align-self: center; }
+  .setup-body > .field.p1 { grid-area: p1; align-self: center; }
+  .setup-body > .rules { grid-area: rules; align-self: stretch; align-content: center; min-width: 0; }
+  /* etichetta sopra il campo: le colonne restano strette senza tagliare le opzioni */
+  #setup .rules .field-zoom { flex-direction: column; align-items: stretch; gap: .25rem; font-size: .85rem; font-weight: 500; }
+  #setup .rules select { min-width: 0; }
+  #setup .rules .money-in input { flex: 1; }
+  .setup-body > .check { grid-area: check; justify-content: flex-start; }
+  .setup-body > button.primary { grid-area: btn; }
+}
+/* schermi larghi ma non troppo: via la parola "indumenti" (la spiega il testo sopra), spazio ai nomi */
+@media (min-width: 900px) and (max-width: 1099px) and (min-height: 501px) {
+  #setup .field span:not(.pawn) { display: none; }
+}
+
 /* ---------- Telefono in orizzontale: schermo basso (≤ 500px) ---------- */
 @media (orientation: landscape) and (max-height: 500px) {
   /* setup: coperchio con l'insegna a sinistra, modulo a destra */
@@ -669,9 +714,6 @@ details.log[open] { flex: 1; }
   #setup button.primary { font-size: 1.15rem; padding: .45rem; }
   body:has(#setup:not([hidden])) { overflow: auto; place-items: safe center; padding: 8px max(8px, env(safe-area-inset-right)) 8px max(8px, env(safe-area-inset-left)); box-sizing: border-box; }
   #setup .muted { font-size: .75rem; }
-  .badge { width: 36px; height: 44px; }
-  .badge.age b { font-size: 1.3rem; }
-  .badge.desc svg { width: 26px; }
   .field { padding: .3rem .6rem .3rem 1rem; }
   .field input { padding: .3rem .5rem; }
   .field input[type="number"] { width: 3.2rem; }

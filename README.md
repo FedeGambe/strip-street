@@ -4,7 +4,7 @@
 
 <p align="center"><strong>Il gioco da tavolo per coppie.</strong> Solo per adulti consenzienti (18+).</p>
 
-<p align="center"><a href="https://strip-street.vercel.app">strip-street.vercel.app</a></p>
+<p align="center"><a href="https://stripstreet.federicogamberini.it">stripstreet.federicogamberini.it</a></p>
 
 ---
 
@@ -79,7 +79,7 @@ Per cambiare testi, prezzi o sfide si modifica solo `src/data.js` (e `src/cards.
 
 ## Deploy
 
-Il sito è pubblicato su Vercel come sito statico (build Vite, cartella `dist/`) all'indirizzo [strip-street.vercel.app](https://strip-street.vercel.app).
+Il sito è su Vercel, collegato a questo repository: ogni push su `main` pubblica in produzione su [stripstreet.federicogamberini.it](https://stripstreet.federicogamberini.it).
 
 ## Crediti
 

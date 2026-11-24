@@ -194,13 +194,9 @@ body:has(#setup[hidden]) #setup-bg { display: none; }
 .check { display: flex; gap: .5rem; align-items: center; justify-content: center; font-weight: 500; }
 .check input { accent-color: var(--rose-deep); width: 1.1rem; height: 1.1rem; }
 /* classificazione: bollino età rosso + icona del contenuto */
-/* in basso a sinistra sul coperchio, come sulla scatola */
-.rating { position: absolute; left: 12px; bottom: 22px; display: flex; gap: 6px; }
-/* coperchio sopra il modulo: bollini più piccoli per non toccare l'insegna */
-.rating .badge { width: 34px; height: 42px; }
-.rating .badge.age b { font-size: 1.2rem; }
-.rating .badge.desc svg { width: 24px; }
-.rating .badge small { font-size: .42rem; }
+/* sullo sfondo in basso a destra, a sinistra del logo; sotto il riquadro se lo schermo è stretto */
+.rating { position: fixed; z-index: -1; right: calc(1.2rem + clamp(110px, 16vw, 200px) + .8rem); bottom: 1.6rem; display: flex; gap: 8px; }
+body:has(#setup[hidden]) .rating { display: none; }
 .badge { flex-shrink: 0; display: grid; grid-template-rows: 1fr auto; place-items: center; width: 46px; height: 56px; border: var(--stroke); border-radius: 8px; box-shadow: var(--hard-sm); overflow: hidden; }
 .badge small { width: 100%; padding: 1px 0 2px; font: 700 .5rem/1 var(--font); letter-spacing: .08em; text-transform: uppercase; text-align: center; }
 .badge.age { background: #E3001B; color: #fff; }
@@ -674,14 +670,9 @@ details.log[open] { flex: 1; }
   .setup-body {
     padding: 1.3rem 1.6rem; column-gap: 1.4rem; align-content: center;
     grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
-    grid-template-areas: "lead lead" "intro rules" "p0 rules" "p1 rules" "check btn";
+    grid-template-areas: "lead lead" "intro rules" "p0 rules" "p1 rules" "check check" "btn btn";
   }
   .setup-body > .lead { grid-area: lead; }
-  #setup .lid .rating { bottom: 12px; }
-  #setup .rating .badge { width: 46px; height: 56px; }
-  #setup .rating .badge.age b { font-size: 1.65rem; }
-  #setup .rating .badge.desc svg { width: 34px; }
-  #setup .rating .badge small { font-size: .5rem; }
   #setup .setup-body > p.muted { grid-area: intro; text-align: left; align-self: end; }
   #setup .field { gap: .45rem; padding-right: .6rem; }
   #setup .field input[type="number"] { width: 3.4rem; }
@@ -693,8 +684,8 @@ details.log[open] { flex: 1; }
   #setup .rules .field-zoom { flex-direction: column; align-items: stretch; gap: .25rem; font-size: .85rem; font-weight: 500; }
   #setup .rules select { min-width: 0; }
   #setup .rules .money-in input { flex: 1; }
-  .setup-body > .check { grid-area: check; justify-content: flex-start; }
-  .setup-body > button.primary { grid-area: btn; }
+  .setup-body > .check { grid-area: check; justify-content: center; margin-top: .3rem; }
+  .setup-body > button.primary { grid-area: btn; justify-self: center; width: min(100%, 380px); }
 }
 /* schermi larghi ma non troppo: via la parola "indumenti" (la spiega il testo sopra), spazio ai nomi */
 @media (min-width: 900px) and (max-width: 1099px) and (min-height: 501px) {

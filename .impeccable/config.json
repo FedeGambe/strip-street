@@ -38,6 +38,33 @@
         ],
         "createdAt": "2026-11-24T08:47:33.669Z",
         "reason": "user requested neon sign look (Las Vegas neon on STRIP/street); glow is the brand"
+      },
+      {
+        "rule": "border-accent-on-rounded",
+        "value": "*",
+        "files": [
+          "src/style.css"
+        ],
+        "createdAt": "2026-11-24T15:16:07.738Z",
+        "reason": "Claude: #setup .lid border-bottom is the ink divider between box lid and body, radius only on top corners; board-game outline style user asked for"
+      },
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "src/style.css"
+        ],
+        "createdAt": "2026-11-24T15:16:08.262Z",
+        "reason": "Claude: #setup .lid::after is the full-width 8-colour property strip (board edge motif), not a side accent on a card"
+      },
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "print.html"
+        ],
+        "createdAt": "2026-11-24T15:17:19.390Z",
+        "reason": "Claude: print.html contains only board cells and cards; the side band is the property colour strip of a Monopoly-style board (domain-appropriate)"
       }
     ]
   }

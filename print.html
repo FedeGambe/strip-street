@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <title>Strip Street · stampa</title>
+  <!-- stessi font di index.html: se cambiano lì, aggiornare anche qui -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lilita+One&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/style.css">
+  <link rel="stylesheet" href="/src/print.css">
+</head>
+<body class="print">
+  <!-- Fogli da stampare: ?sheet=tabellone | attivita | proprieta. I PDF in doc/ si rigenerano con `npm run pdf`. -->
+  <main id="sheets"></main>
+  <script type="module" src="/src/print.js"></script>
+</body>
+</html>

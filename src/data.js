@@ -31,7 +31,7 @@ export const BOARD = [
   { icon: 'MessageCircleHeart', type: 'prop', group: 'marrone', name: 'Marrone 2', title: 'Complimento Sincero', price: 60, text: 'Dì cosa ti piace del tuo partner.' },
   { icon: 'Heart', type: 'tax', name: 'Tassa', title: 'Tassa Romantica', text: 'Bacio a scelta del partner.' },
   { icon: 'Sofa', type: 'room', group: 'stanza', name: 'Stanza 1', title: 'Il Divano', price: 200, text: 'Chi possiede una stanza può spostarci l’azione di qualsiasi sfida.' },
-  { icon: 'Cookie', type: 'prop', group: 'azzurro', name: 'Azzurro 1', title: 'Morso Leggero', price: 100, text: 'Dai al partner tre piccoli morsi dove vuoi tu: orecchio, collo, spalla.' },
+  { icon: 'MessageCircleQuestion', type: 'prop', group: 'azzurro', name: 'Azzurro 1', title: 'Tre Domande', price: 100, text: 'Fai tre domande al partner: deve rispondere sinceramente.' },
   { icon: 'Sparkles', type: 'card', name: 'Attività', title: 'Attività', text: 'Pesca una carta.' },
   { icon: 'Speech', type: 'prop', group: 'azzurro', name: 'Azzurro 2', title: 'Sussurro Audace', price: 100, text: 'Dì qualcosa di ammiccante all’orecchio del partner.' },
   { icon: 'WandSparkles', type: 'prop', group: 'azzurro', name: 'Azzurro 3', title: 'Desiderio Segreto', price: 120, text: 'Rivela un desiderio segreto.' },

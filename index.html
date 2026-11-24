@@ -4,36 +4,63 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Strip Street</title>
-  <meta name="theme-color" content="#1A0F17">
+  <meta name="theme-color" content="#4A1530">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bodoni+Moda:ital,opsz,wght@1,6..96,500;1,6..96,700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lilita+One&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/src/style.css">
 </head>
 <body>
-  <div class="blobs" aria-hidden="true"><i></i><i></i><i></i></div>
-
-  <form id="setup" class="glass" hidden>
-    <h1 class="brand-sign" id="brand-sign"><span class="sr-only">Strip Street</span></h1>
-    <p class="muted">Il gioco da tavolo per coppie. Solo per adulti consenzienti.</p>
-    <p class="muted small">Indicate quanti indumenti indossa ognuno: servono a pagare i debiti quando finiscono i soldi.
-      Chi deve pagare senza soldi né vestiti va in bancarotta e perde.</p>
-    <div class="field p0"><input name="p1" placeholder="Giocatore 1" required><input name="c1" type="number" min="1" max="20" value="5" required aria-label="Indumenti giocatore 1"><span>indumenti</span></div>
-    <div class="field p1"><input name="p2" placeholder="Giocatore 2" required><input name="c2" type="number" min="1" max="20" value="5" required aria-label="Indumenti giocatore 2"><span>indumenti</span></div>
-    <label class="check"><input type="checkbox" required> Abbiamo entrambi più di 18 anni</label>
-    <button class="primary">Inizia la partita</button>
+  <form id="setup" hidden>
+    <div class="lid"><h1 class="brand-sign" id="brand-sign"><span class="sr-only">Strip Street</span></h1></div>
+    <div class="setup-body">
+      <div class="deco" id="setup-deco" aria-hidden="true"></div>
+      <p class="lead">Il gioco da tavolo per coppie. Solo per adulti consenzienti.</p>
+      <p class="muted small">Indicate quanti indumenti indossa ognuno: servono a pagare i debiti quando finiscono i soldi.
+        Chi deve pagare senza soldi né vestiti va in bancarotta e perde.</p>
+      <div class="field p0"><input name="p1" placeholder="Giocatore 1" required><input name="c1" type="number" min="1" max="20" value="5" required aria-label="Indumenti giocatore 1"><span>indumenti</span></div>
+      <div class="field p1"><input name="p2" placeholder="Giocatore 2" required><input name="c2" type="number" min="1" max="20" value="5" required aria-label="Indumenti giocatore 2"><span>indumenti</span></div>
+      <label class="check"><input type="checkbox" required> Abbiamo entrambi più di 18 anni</label>
+      <button class="primary">Inizia la partita</button>
+    </div>
   </form>
+
+  <header id="bar" hidden>
+    <button type="button" class="tab" id="bar-tab" aria-expanded="false" aria-controls="bar">Menu ▾</button>
+    <h1 class="brand-word" id="brand-word"><span class="sr-only">Strip Street</span></h1>
+    <div class="row">
+      <button id="open-settings" class="small">Impostazioni</button>
+      <button id="reset" class="small">Nuova partita</button>
+    </div>
+  </header>
+
+  <dialog id="settings" class="box">
+    <form method="dialog">
+      <h2>Impostazioni</h2>
+      <h3>Timer libero</h3>
+      <div id="quick" class="row"></div>
+      <h3>Generali</h3>
+      <label class="field-zoom">Zoom sul lato del giocatore di turno
+        <select id="zoom">
+          <option value="off">Spento</option>
+          <option value="leggero">Leggero</option>
+          <option value="medio">Medio</option>
+          <option value="forte">Forte</option>
+        </select>
+      </label>
+      <button class="primary">Chiudi</button>
+    </form>
+  </dialog>
 
   <main id="board" hidden>
     <section id="center">
       <div class="col side-left">
         <div id="players"></div>
-        <div id="timer" class="glass" hidden></div>
+        <div id="timer" class="box" hidden></div>
       </div>
 
       <div class="col mid">
-        <h1 class="brand-word" id="brand-word"><span class="sr-only">Strip Street</span></h1>
         <div id="alert" hidden></div>
         <div class="table">
           <div class="deck" id="deck-act"></div>
@@ -45,19 +72,14 @@
       </div>
 
       <div class="col side-right">
-        <div class="glass panel">
-          <h2>Timer libero</h2>
-          <div id="quick" class="row"></div>
-        </div>
-        <details class="glass panel">
+        <details class="box panel">
           <summary>Regole manuali</summary>
           <div id="manual"></div>
         </details>
-        <details class="glass panel log" open>
+        <details class="box panel log" open>
           <summary>Cronaca</summary>
           <ol id="log"></ol>
         </details>
-        <button id="reset" class="ghost">Nuova partita</button>
       </div>
     </section>
   </main>

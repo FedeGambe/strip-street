@@ -1,0 +1,31 @@
+/* Stampa (print.html): sovrascrive solo quello che in style.css dipende dallo schermo (vh, overflow, sfondo tavolo). */
+body.print { height: auto; overflow: visible; background: #fff; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+@page { size: A4 portrait; margin: 0; }
+@page a3 { size: A3 portrait; margin: 0; }
+.page { position: relative; break-after: page; overflow: hidden; }
+.page.a4 { width: 210mm; height: 297mm; }
+.page.a3 { page: a3; width: 297mm; height: 420mm; display: grid; place-items: center; }
+
+/* Tabellone quadrato 28 cm: angoli 1,6 come nell'app */
+.pboard {
+  display: grid;
+  width: 280mm;
+  height: 280mm;
+  grid-template-columns: 1.6fr repeat(9, 1fr) 1.6fr;
+  grid-template-rows: 1.6fr repeat(9, 1fr) 1.6fr;
+  border: 3px solid var(--ink);
+  background: var(--felt);
+  font-size: 7.5pt;
+}
+.pboard .cell { border-radius: 0; }
+.pcenter { grid-area: 2 / 2 / 11 / 11; display: grid; place-items: center; align-content: center; gap: 14mm; }
+.pcenter .logo svg { display: block; width: 130mm; height: auto; }
+.spots { display: flex; gap: 22mm; }
+.spot { width: 63mm; height: 88mm; border: 2px dashed var(--ink); border-radius: 4mm; display: grid; place-items: center; background: rgba(255, 255, 255, .45); }
+.spot span { font: 400 13pt var(--display); letter-spacing: .1em; text-transform: uppercase; }
+
+/* Carte 63x88 mm (formato poker), 3x3 centrate sul foglio, con linee di taglio grigie */
+.page.grid { display: grid; grid-template-columns: repeat(3, 63mm); grid-auto-rows: 88mm; justify-content: center; align-content: center; }
+.pcard { position: relative; outline: .2mm dashed #bbb; container-type: size; } /* proporzioni delle carte: style.css (cqh) */
+.pcard > * { border-radius: 3mm; }
+.pcard:empty { outline: none; }

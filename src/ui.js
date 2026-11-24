@@ -1,11 +1,12 @@
-// UI: tabellone glass, mazzi al centro del tavolo, animazioni. Legge lo stato del motore
+// UI: tabellone stile gioco da tavolo, mazzi al centro del tavolo, animazioni. Legge lo stato del motore
 // (game.js) e lo ridisegna; le animazioni sono solo presentazione, le regole restano nel motore.
 import { BOARD, CARDS, RENT, JAIL_FINE, JAIL_KISS, ORGASM_FINE } from './data.js';
 import * as G from './game.js';
 import * as T from './timer.js';
-import { icon } from './icons.js';
+import { icon, sticker } from './icons.js';
+import { ART } from './art.js';
 import signSvg from '../brand/export/insegna.svg?raw';
-import wordSvg from '../brand/export/logotipo.svg?raw';
+import wordSvg from '../brand/export/logotipo-su-chiaro.svg?raw';
 
 const KEY = 'strip-street-save-v3'; // cambiare versione se cambia la forma dello stato
 const $ = (id) => document.getElementById(id);
@@ -33,6 +34,9 @@ function gridPos(i) {
   return [i - 29, 11];
 }
 // Lato del tabellone: serve a mettere la fascia colorata sul bordo interno.
+// Illustrazione dedicata (angoli per tipo, le altre per icona); se manca, icona ad adesivo.
+const art = (c, cls = 'ico') => ART[c.type] || ART[c.icon] || sticker(c.icon, cls);
+const PAWN = '<svg viewBox="0 0 24 30" aria-hidden="true"><g stroke="#1A0F17" stroke-width="2" stroke-linejoin="round"><path d="M8 13h8l2.5 11h-13z"/><circle cx="12" cy="8" r="5"/><rect x="3" y="24" width="18" height="5" rx="2"/></g></svg>';
 const side = (i) => (i % 10 === 0 ? 'corner' : ['b', 'l', 't', 'r'][Math.floor(i / 10)]);
 
 function btn(label, fn, { disabled = false, cls = '' } = {}) {
@@ -56,7 +60,7 @@ function buildBoard() {
     el.style.gridArea = `${r} / ${col}`;
     if (c.type === 'prop') el.style.setProperty('--g', `var(--${c.group})`);
     el.title = `${c.title}: ${c.text}`;
-    el.innerHTML = `<span class="num">${i + 1}</span>${icon(c.icon)}`
+    el.innerHTML = `<span class="num">${i + 1}</span>${art(c)}`
       + `<span class="txt"><span class="name">${c.title}</span>`
       + (c.price ? `<span class="price">${c.price}€</span>` : '')
       + (CORNER_SUB[c.type] ? `<span class="sub">${CORNER_SUB[c.type]}</span>` : '') + '</span>';
@@ -65,12 +69,12 @@ function buildBoard() {
   for (let n = 0; n < 2; n++) {
     const t = document.createElement('div');
     t.className = `token p${n}`;
-    t.innerHTML = '<i></i>';
+    t.innerHTML = PAWN;
     board.append(t);
     tokens.push(t);
   }
-  $('deck-act').innerHTML = `<div class="deck-face">${icon('Sparkles')}<span>Attività</span></div>`;
-  $('deck-prop').innerHTML = `<div class="deck-face">${icon('KeyRound')}<span>Proprietà</span></div>`;
+  $('deck-act').innerHTML = back('Attività', 'deckAct', '');
+  $('deck-prop').innerHTML = back('Proprietà', 'deckProp', '');
   addEventListener('resize', () => s && s.players.forEach((p, n) => placeToken(n, p.pos)));
 }
 
@@ -82,6 +86,16 @@ function placeToken(n, pos, hop = false) {
   const y = cell.offsetTop + cell.offsetHeight * 0.2;
   t.style.transform = `translate(${x}px, ${y}px)`;
   if (hop && !reduced) t.firstChild.animate([{ transform: 'translateY(0)' }, { transform: 'translateY(-12px)' }, { transform: 'translateY(0)' }], { duration: 160, easing: 'ease-out' });
+}
+
+// Durante la transizione dello zoom le caselle si spostano: le pedine le inseguono per ~0,6s.
+function followTokens() {
+  const end = performance.now() + 600;
+  const step = () => {
+    if (!busy) s.players.forEach((p, n) => placeToken(n, p.pos));
+    if (performance.now() < end) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
 }
 
 // --- Dadi ---
@@ -130,7 +144,7 @@ function cellCard(pos, L) {
     : c.type === 'room' ? 'Affitto 25 · 50 · 100 · 200€' : '';
   return `<div class="face front cell-card t-${c.type}"${c.type === 'prop' ? ` style="--g: var(--${c.group})"` : ''}>`
     + `<header><small>${c.name}${c.price ? ` · ${c.price}€` : ''}</small><h2>${c.title}</h2></header>`
-    + `<div class="art">${icon(c.icon, 'ico big')}</div><p class="task">${c.text}</p>${rent ? `<p class="rent">${rent}</p>` : ''}`
+    + `<div class="art">${art(c, 'ico big')}</div><p class="task">${c.text}</p>${rent ? `<p class="rent">${rent}</p>` : ''}`
     + `<footer>${chips.join('')}</footer></div>`;
 }
 
@@ -138,10 +152,10 @@ function actCard(id) {
   const c = CARDS[id];
   return `<div class="face front act-card ${c.kind}">`
     + `<header><small>${KIND[c.kind]}</small><h2>${c.title}</h2></header>`
-    + `<div class="art">${icon(KIND_ICON[c.kind], 'ico big')}</div><p class="task">${c.text}</p>`
+    + `<div class="art">${art({ icon: KIND_ICON[c.kind] }, 'ico big')}</div><p class="task">${c.text}</p>`
 }
 
-const back = (label, ico) => `<div class="face back"><div class="deck-face">${icon(ico)}<span>${label}</span></div></div>`;
+const back = (label, artKey, cls = 'face back') => `<div class="${cls} deck-face">${ART[artKey]}<span>${label}</span></div>`;
 
 function renderSlot() {
   const L = s.landing;
@@ -150,15 +164,15 @@ function renderSlot() {
   if (!L) {
     shownKey = null;
     slot.innerHTML = s.phase === 'over' ? ''
-      : `<div class="hint">${icon('Sparkles', 'ico big')}<br>Tocca a <b class="p${s.turn}">${esc(p.name)}</b>${p.inJail ? '<br><small>Sei in prigione: esci subito o salta il turno</small>' : ''}</div>`;
+      : `<div class="hint">${ART.Sparkles}<br>Tocca a <b class="p${s.turn}">${esc(p.name)}</b>${p.inJail ? '<br><small>Sei in prigione: esci subito o salta il turno</small>' : ''}</div>`;
     return;
   }
   const key = `${s.turn}|${s.dice}|${L.pos}|${L.card}`;
   const fresh = key !== shownKey;
   shownKey = key;
   const cards = [];
-  if (L.card != null) cards.push({ html: actCard(L.card) + back('Attività', 'Sparkles'), from: 'act' });
-  if (BOARD[L.pos].type !== 'card') cards.push({ html: cellCard(L.pos, L) + back('Proprietà', 'KeyRound'), from: 'prop' });
+  if (L.card != null) cards.push({ html: actCard(L.card) + back('Attività', 'deckAct'), from: 'act' });
+  if (BOARD[L.pos].type !== 'card') cards.push({ html: cellCard(L.pos, L) + back('Proprietà', 'deckProp'), from: 'prop' });
   slot.innerHTML = cards.map((c, i) => `<div class="card ${fresh ? `draw from-${c.from}` : ''}" style="animation-delay:${i * 0.35}s">${c.html}</div>`).join('');
   if (fresh && !reduced) cards.forEach((c) => $(`deck-${c.from}`).animate([{ transform: 'translateY(0)' }, { transform: 'translateY(-8px)' }, { transform: 'translateY(0)' }], { duration: 300 }));
 }
@@ -168,7 +182,7 @@ function renderSlot() {
 function render() {
   localStorage.setItem(KEY, JSON.stringify(s));
   $('setup').hidden = !!s;
-  $('board').hidden = !s;
+  $('board').hidden = $('bar').hidden = !s;
   if (!s) return;
   const p = s.players[s.turn];
   const L = s.landing;
@@ -178,13 +192,19 @@ function render() {
     el.dataset.owner = s.owners[i] ?? '';
     el.classList.toggle('here', !busy && L?.pos === i);
   });
-  if (!busy) s.players.forEach((pl, n) => placeToken(n, pl.pos));
+  if (!busy) {
+    const zoom = $('zoom').value;
+    if ($('board').dataset.zoom !== zoom) { $('board').dataset.zoom = zoom; followTokens(); }
+    const focus = zoom !== 'off' ?['b', 'l', 't', 'r'][Math.floor((L?.pos ?? p.pos) / 10) % 4] : '';
+    if ($('board').dataset.focus !== focus) { $('board').dataset.focus = focus; followTokens(); }
+    s.players.forEach((pl, n) => placeToken(n, pl.pos));
+  }
   if (s.dice && !busy) showDice(s.dice);
 
   $('players').innerHTML = s.players.map((pl, n) => {
     const hand = [['jailFree', 'Esci di prigione', 'KeyRound'], ['shield', 'Scudo', 'Shield']]
       .flatMap(([k, label, ico]) => Array(G.held(pl, k)).fill(`<span class="chip">${icon(ico)}${label}</span>`)).join('');
-    return `<div class="player glass p${n} ${n === s.turn && s.phase !== 'over' ? 'active' : ''} ${s.winner === n ? 'winner' : ''}">`
+    return `<div class="player box p${n} ${n === s.turn && s.phase !== 'over' ? 'active' : ''} ${s.winner === n ? 'winner' : ''}">`
       + `<div class="who"><span class="dot"></span><b>${esc(pl.name)}</b>${pl.inJail ? '<span class="chip">in prigione</span>' : ''}</div>`
       + `<div class="money">${pl.money}<small>€</small></div>`
       + `<div class="meta"><span>${icon('Shirt')}${pl.clothes} indumenti</span><span>${icon('KeyRound')}${G.propsOf(s, n).length} proprietà</span></div>`
@@ -226,7 +246,7 @@ function render() {
   }
   $('actions').replaceChildren(...a);
 
-  $('quick').replaceChildren(...[30, 60, 120].map((n) => btn(T.fmt(n), () => T.start(n), { cls: 'small' })));
+  $('quick').replaceChildren(...[30, 60, 120].map((n) => btn(T.fmt(n), () => { T.start(n); $('settings').close(); }, { cls: 'small' })));
 
   $('manual').replaceChildren(...(s.phase === 'over' ? [] : s.players.flatMap((pl, n) => [
     Object.assign(document.createElement('h3'), { textContent: pl.name, className: `p${n}` }),
@@ -263,16 +283,36 @@ $('setup').onsubmit = (e) => {
   render();
 };
 
+$('open-settings').onclick = () => $('settings').showModal();
+// Barra in alto: si apre/chiude solo con la linguetta; un clic fuori la richiude.
+function toggleBar(open = !$('bar').classList.contains('open')) {
+  $('bar').classList.toggle('open', open);
+  $('bar-tab').textContent = open ? 'Chiudi ▴' : 'Menu ▾';
+  $('bar-tab').setAttribute('aria-expanded', open);
+}
+$('bar-tab').onclick = () => toggleBar();
+document.addEventListener('click', (e) => {
+  if ($('bar').classList.contains('open') && !$('bar').contains(e.target) && !$('settings').open) toggleBar(false);
+});
+// Preferenze generali: salvate a parte dalla partita, restano anche con "Nuova partita".
+const ZOOM_KEY = 'strip-street-zoom';
+const savedZoom = localStorage.getItem(ZOOM_KEY);
+$('zoom').value = ['off', 'leggero', 'medio', 'forte'].includes(savedZoom) ? savedZoom : 'medio'; // 'on' (versione vecchia) = medio
+$('zoom').onchange = () => { localStorage.setItem(ZOOM_KEY, $('zoom').value); render(); };
+
 $('reset').onclick = () => {
-  if (busy) return;
+  if (busy || !confirm('Iniziare una nuova partita? Quella in corso andrà persa.')) return;
   s = null;
   shownKey = lastMoney = null;
   T.stop();
+  toggleBar(false);
   render();
 };
 
 // Marchio: SVG generati da brand/build.py, inseriti inline così le animazioni CSS li raggiungono.
 $('brand-sign').insertAdjacentHTML('beforeend', signSvg);
+$('setup-deco').innerHTML = ['Cherry', 'Heart', 'Crown', 'Flame', 'Ribbon'].map((k) => ART[k]).join('');
+document.querySelectorAll('.field').forEach((f) => f.insertAdjacentHTML('afterbegin', `<span class="pawn">${PAWN}</span>`));
 $('brand-word').insertAdjacentHTML('beforeend', wordSvg);
 
 buildBoard();

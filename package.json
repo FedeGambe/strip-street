@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "test": "node --test"
+    "test": "node --test",
+    "pdf": "node scripts/pdf.mjs"
   },
   "devDependencies": {
     "vite": "^7.0.0"

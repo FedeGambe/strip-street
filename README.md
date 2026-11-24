@@ -31,7 +31,7 @@ Il regolamento completo è nella pagina **Guida** dell'app. Le caselle e le cart
 - Timer per le sfide a tempo, con preset rapidi nelle impostazioni
 - Zoom sul lato del giocatore di turno ed effetti sonori regolabili
 - Layout per desktop e telefono, installabile come app (Aggiungi a Home) a schermo intero
-- Versione stampabile: tabellone A3 e carte A4 in [`doc/`](doc)
+- Versione stampabile: tabellone A3, carte A4 e guida in [`doc/`](doc)
 
 ## Sviluppo
 
@@ -53,6 +53,14 @@ npm run pdf
 ```
 
 Lo script usa Edge o Chrome headless. Su macOS e Linux indicare il browser con `BROWSER=/percorso/del/browser npm run pdf`.
+
+### Rigenerare la guida
+
+```bash
+npm run guida
+```
+
+Scrive `doc/guida.md` e `doc/guida.pdf` (A4) leggendo regole, caselle e carte da `src/data.js`. Non serve il server di sviluppo; usa Chrome o Edge come lo script dei PDF.
 
 ### Rigenerare il marchio
 

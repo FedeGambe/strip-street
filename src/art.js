@@ -123,13 +123,13 @@ export const ART = {
 
   // dorsi dei mazzi (5:7)
   deckAct: g(`<rect x="1.5" y="1.5" width="97" height="137" rx="8" fill="#F7941D"/>`
-    + `<rect x="7" y="7" width="86" height="126" rx="5" fill="none" stroke="#FFF6E5" stroke-width="2" stroke-dasharray="4 3"/>`
+    + `<rect x="7" y="7" width="86" height="126" rx="5" fill="none" stroke="#FFF6E5" stroke-width="1" stroke-dasharray="3 2"/>`
     + `<g transform="translate(-25 0) scale(1.5)"><g transform="translate(0 12)"><path d="${heart}" fill="#E0446E" stroke-width="2"/>`
     + `<path d="M44 44a6 6 0 1 1 9 5c-2 1.3-3 2.3-3 5v1.5" fill="none" stroke="#FFF6E5" stroke-width="4"/><circle cx="50" cy="60" r="2.2" fill="#FFF6E5" stroke="none"/></g></g>`
     + star(20, 116, 7) + star(82, 44, 6), '0 0 100 140'), // angolo in basso a destra: logo (cards.js)
 
   deckProp: g(`<rect x="1.5" y="1.5" width="97" height="137" rx="8" fill="#29A3DC"/>`
-    + `<rect x="7" y="7" width="86" height="126" rx="5" fill="none" stroke="#FFF6E5" stroke-width="2" stroke-dasharray="4 3"/>`
+    + `<rect x="7" y="7" width="86" height="126" rx="5" fill="none" stroke="#FFF6E5" stroke-width="1" stroke-dasharray="3 2"/>`
     + `<g transform="translate(0 3)"><rect x="62" y="42" width="9" height="18" fill="#955436"/><path d="M18 68L50 38L82 68Z" fill="#ED1B24"/>`
     + `<rect x="26" y="66" width="48" height="40" fill="#FFF6E5"/><rect x="31" y="73" width="11" height="11" fill="#AAE0FA"/><rect x="58" y="73" width="11" height="11" fill="#AAE0FA"/>`
     + `<path d="M43 106V90a7 7 0 0 1 14 0V106Z" fill="#E0446E"/><path d="M14 106H86"/></g>`

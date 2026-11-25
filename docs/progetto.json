@@ -1,0 +1,14 @@
+{
+    "repo": "strip-street",
+    "t": "Strip Street",
+    "d": "Gioco da tavolo per coppie (18+) nel browser: compri le proprietà, al posto dell'affitto si fanno sfide.",
+    "tags": [
+        "Gioco",
+        "JavaScript",
+        "PWA"
+    ],
+    "y": 2026,
+    "live": "/strip-street/",
+    "img": "img/cover_verticale.svg",
+    "colore": "#E0446E"
+}
